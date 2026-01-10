@@ -25,7 +25,7 @@ export default function Header({ name = "Usuario" }: Props) {
       <View style={styles.avatarContainer}>
         <Image
           source={{
-            uri: "https://preview.redd.it/i-drew-the-rodeo-album-cover-v0-fp830723fqwd1.png?width=1080&crop=smart&auto=webp&s=5144251c22bfd7a784d008361e9394f7cbef7b1d",
+            uri: "https://cdn-3.expansion.mx/dims4/default/3ed2e74/2147483647/strip/true/crop/1000x1000+0+0/resize/1800x1800!/format/webp/quality/80/?url=https%3A%2F%2Fcdn-3.expansion.mx%2F98%2F48%2Fccf56493491f89ad68225c2fba92%2Fgeorge-floyd.jpg",
           }}
           style={styles.avatar}
         />
