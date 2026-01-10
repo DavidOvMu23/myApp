@@ -1,13 +1,19 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  GestureResponderEvent,
+} from "react-native";
 
 interface TextButtonProps {
   text: string;
+  onPress?: (event: GestureResponderEvent) => void;
 }
 
-const TextButton = ({ text }: TextButtonProps) => {
+const TextButton = ({ text, onPress }: TextButtonProps) => {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );

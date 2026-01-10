@@ -5,8 +5,10 @@ export default function Layout() {
   return (
     <Stack initialRouteName="index">
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="home" options={{ headerShown: false }} />
+      <Stack.Screen name="client" options={{ headerShown: false }} />
+      <Stack.Screen name="hooks-demo" options={{ title: "Hooks Demo" }} />
     </Stack>
   );
 }

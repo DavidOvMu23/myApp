@@ -1,6 +1,7 @@
 import React from "react";
-import Login from "./login";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  return <Login />;
+  // Use Redirect to avoid navigating before layout mounts
+  return <Redirect href="/login" />;
 }

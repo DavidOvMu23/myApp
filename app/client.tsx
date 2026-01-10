@@ -5,7 +5,10 @@ import Header from "src/components/Header/header";
 export default function Client() {
   return (
     <View style={styles.container}>
-      <View style={styles.content}></View>
+      <Header name="Clientes" />
+      <View style={styles.content}>
+        <Text>Lista de clientes (vacío por ahora)</Text>
+      </View>
     </View>
   );
 }

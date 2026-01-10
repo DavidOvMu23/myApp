@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
+import { useRouter } from "expo-router";
 
 import LockIcon from "../src/hooks/login/LockIcon/lock_icon";
 import TextfieldEmail from "../src/hooks/login/Textfield/textfield_email";
@@ -8,14 +9,36 @@ import TextButton from "../src/components/Buttons/text_button";
 import Button from "../src/components/Buttons/button";
 import GoogleButton from "../src/components/Buttons/google_button";
 
-interface LoginProps {
-  onLogin?: () => void;
-}
-
-export default function Login({ onLogin }: LoginProps) {
+export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const isLoginDisabled = !email.trim() || !password.trim();
+
+  // Guard to surface which import is invalid instead of throwing a cryptic React error
+  const components = {
+    LockIcon,
+    TextfieldEmail,
+    TextfieldPassword,
+    Button,
+    GoogleButton,
+    TextButton,
+  };
+
+  const invalidEntries = Object.entries(components).filter(
+    ([, comp]) => typeof comp !== "function"
+  );
+
+  if (invalidEntries.length) {
+    console.error("Componente no es función", invalidEntries);
+    return (
+      <View style={styles.container}>
+        <Text>
+          Componente inválido: {invalidEntries.map(([name]) => name).join(", ")}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -44,7 +67,7 @@ export default function Login({ onLogin }: LoginProps) {
         <Button
           text="Iniciar Sesión"
           disabled={isLoginDisabled}
-          onPress={() => onLogin && onLogin()}
+          onPress={() => router.replace("/home")}
         />
 
         <View style={[styles.dividerContainer, { marginTop: 30 }]}>
