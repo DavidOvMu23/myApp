@@ -1,6 +1,6 @@
-import React from "react"; // JSX
-import { View, StyleSheet } from "react-native"; // Contenedor y estilos
-import { TextInput } from "react-native-paper"; // Input con estilo Material
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { TextInput } from "react-native-paper";
 
 // Componente de campo de texto para la entrada de correo electrónico
 interface TextfieldEmailProps {

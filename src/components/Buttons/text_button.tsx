@@ -1,4 +1,4 @@
-import React from "react"; // JSX
+import React from "react";
 import {
   TouchableOpacity,
   Text,

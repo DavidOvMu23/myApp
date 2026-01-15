@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react"; // useState controla formulario, useMemo evita recomputar
-import { View, Text, StyleSheet, ScrollView } from "react-native"; // Layout
-import { TextInput } from "react-native-paper"; // Inputs con outline
-import { useLocalSearchParams, useRouter } from "expo-router"; // Lee params y navega
-import Header from "src/components/Header/header"; // Barra superior
-import CustomButton from "src/components/Buttons/button"; // Botones de acción
-import { clientes } from "src/types"; // Datos mock
+import React, { useMemo, useState } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { TextInput } from "react-native-paper";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import Header from "src/components/Header/header";
+import CustomButton from "src/components/Buttons/button";
+import { clientes } from "src/types";
 
 export default function EditClient() {
-  const router = useRouter(); // Para volver o navegar
+  const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>(); // Lee el id de la URL
   const clientId = Number(params.id); // Convierte el id
 

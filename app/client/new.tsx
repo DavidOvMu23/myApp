@@ -1,14 +1,14 @@
-import React from "react"; // JSX
-import { View, Text, StyleSheet, ScrollView } from "react-native"; // UI base
-import { useRouter } from "expo-router"; // Navegación
-import Header from "src/components/Header/header"; // Barra superior
-import CustomButton from "src/components/Buttons/button"; // Botones de acción
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import Header from "src/components/Header/header";
+import CustomButton from "src/components/Buttons/button";
 import BottomNav, {
   type BottomNavItem,
-} from "src/components/BottomNav/bottom_nav"; // Barra inferior
+} from "src/components/BottomNav/bottom_nav";
 
 export default function NewClient() {
-  const router = useRouter(); // Hook de navegación
+  const router = useRouter();
 
   // Pestañas inferiores; seguimos marcando Clientes como activo
   const navItems: BottomNavItem[] = [

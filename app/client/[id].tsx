@@ -1,15 +1,15 @@
-import React, { useMemo } from "react"; // useMemo evita recalcular al rerender
-import { View, Text, StyleSheet, ScrollView } from "react-native"; // UI básica
-import { useLocalSearchParams, useRouter } from "expo-router"; // Lee params de URL y navega
-import Header from "src/components/Header/header"; // Barra superior
+import React, { useMemo } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import Header from "src/components/Header/header";
 import BottomNav, {
   type BottomNavItem,
-} from "src/components/BottomNav/bottom_nav"; // Barra inferior
-import { clientes, pedidos } from "src/types"; // Datos mock
-import CustomButton from "src/components/Buttons/button"; // Botón primario
+} from "src/components/BottomNav/bottom_nav";
+import { clientes, pedidos } from "src/types";
+import CustomButton from "src/components/Buttons/button";
 
 export default function ClientDetail() {
-  const router = useRouter(); // Navegador
+  const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>(); // Lee /client/[id]
   const clientId = Number(params.id); // Convierte param a número
 

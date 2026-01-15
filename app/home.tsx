@@ -1,14 +1,14 @@
-import React from "react"; // Necesario para JSX
-import { View, Text, StyleSheet } from "react-native"; // Primitivas UI
-import { useRouter } from "expo-router"; // Hook para navegar entre pantallas
-import CustomButton from "src/components/Buttons/button"; // Botón primario reutilizable
-import Header from "src/components/Header/header"; // Barra superior con saludo
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import CustomButton from "src/components/Buttons/button";
+import Header from "src/components/Header/header";
 import BottomNav, {
   type BottomNavItem,
 } from "src/components/BottomNav/bottom_nav"; // Barra inferior de navegación
 
 export default function Home() {
-  const router = useRouter(); // Instancia de navegación para hacer push a rutas
+  const router = useRouter(); //navegación para hacer push a rutas
 
   // Configuración de pestañas inferiores; marcamos Home como activa
   const navItems: BottomNavItem[] = [
@@ -43,7 +43,7 @@ export default function Home() {
         <Text style={styles.welcome}></Text>
       </View>
 
-      {/* Barra inferior sin botón flotante */}
+      {/* Barra inferior*/}
       <BottomNav items={navItems} showFab={false} />
     </View>
   );

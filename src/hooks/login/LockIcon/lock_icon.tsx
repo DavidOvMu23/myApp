@@ -1,6 +1,6 @@
-import React from "react"; // JSX
-import { View, StyleSheet, Text } from "react-native"; // UI base
-import { Feather } from "@expo/vector-icons"; // Icono de candado
+import React from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 // Componente funcional que representa un ícono de candado
 const LockIcon = () => {

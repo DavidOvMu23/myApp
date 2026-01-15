@@ -1,12 +1,12 @@
-import React, { useState } from "react"; // useState para controlar inputs
-import { View, StyleSheet, Text } from "react-native"; // Primitivas de layout
-import { useRouter } from "expo-router"; // Navegación
-import LockIcon from "../src/hooks/login/LockIcon/lock_icon"; // Icono decorativo
-import TextfieldEmail from "../src/hooks/login/Textfield/textfield_email"; // Input de email
-import TextfieldPassword from "../src/hooks/login/Textfield/textfield_password"; // Input de password
-import TextButton from "../src/components/Buttons/text_button"; // Botón de texto
-import Button from "../src/components/Buttons/button"; // Botón principal
-import GoogleButton from "../src/components/Buttons/google_button"; // Botón Google
+import React, { useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { useRouter } from "expo-router";
+import LockIcon from "../src/hooks/login/LockIcon/lock_icon";
+import TextfieldEmail from "../src/hooks/login/Textfield/textfield_email";
+import TextfieldPassword from "../src/hooks/login/Textfield/textfield_password";
+import TextButton from "../src/components/Buttons/text_button";
+import Button from "../src/components/Buttons/button";
+import GoogleButton from "../src/components/Buttons/google_button";
 
 export default function Login() {
   const router = useRouter(); // Para navegar tras iniciar sesión

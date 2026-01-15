@@ -1,6 +1,6 @@
-import React from "react"; // JSX
-import { View, StyleSheet } from "react-native"; // Contenedor
-import { TextInput } from "react-native-paper"; // Input estilo Material
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { TextInput } from "react-native-paper";
 
 // Componente de campo de texto para la entrada de contraseña
 interface TextfieldPasswordProps {

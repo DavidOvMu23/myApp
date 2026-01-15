@@ -1,9 +1,9 @@
-import React from "react"; // JSX
-import { View, Text, StyleSheet, ScrollView } from "react-native"; // UI base
-import { useRouter } from "expo-router"; // Navegación
-import Header from "src/components/Header/header"; // Barra superior
-import CustomButton from "src/components/Buttons/button"; // Botón reutilizable
-import { clientes } from "src/types"; // Datos mock de clientes
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import Header from "src/components/Header/header";
+import CustomButton from "src/components/Buttons/button";
+import { clientes } from "src/types";
 import BottomNav, {
   type BottomNavItem,
 } from "src/components/BottomNav/bottom_nav"; // Barra inferior

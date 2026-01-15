@@ -1,6 +1,6 @@
-import React from "react"; // JSX
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native"; // UI base
-import { FontAwesome } from "@expo/vector-icons"; // Icono de Google
+import React from "react";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface GoogleButtonProps {
   text?: string;

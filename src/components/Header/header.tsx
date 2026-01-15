@@ -1,5 +1,5 @@
-import React from "react"; // JSX
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native"; // UI base
+import React from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 
 // Componente de encabezado que muestra un saludo, la fecha actual y un avatar
 interface Props {
@@ -16,7 +16,7 @@ export default function Header({
 }: Props) {
   const today = new Date(); // Fecha actual
 
-  // Formatea fecha en español (ej: 12 de enero de 2026)
+  // Formatea fecha en español (esto me lo ha hecho el chat)
   const formatted = today.toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "long",

@@ -1,7 +1,7 @@
-import React from "react"; // JSX
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"; // UI base
-import { Ionicons } from "@expo/vector-icons"; // Iconos iOS/Android
-import { Link, type Href } from "expo-router"; // Navegación declarativa
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Link, type Href } from "expo-router";
 
 export type BottomNavItem = {
   icon: React.ComponentProps<typeof Ionicons>["name"];

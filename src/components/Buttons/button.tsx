@@ -1,6 +1,5 @@
-/* Este archivo es para crear un botón personalizado */
-import React from "react"; // JSX
-import { TouchableOpacity, Text, StyleSheet } from "react-native"; // Componentes básicos
+import React from "react";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 /* el interface este es para definir las propiedades que el botón puede recibir */
 interface ButtonProps {
