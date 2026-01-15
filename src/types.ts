@@ -4,7 +4,7 @@
 // 1. TIPOS BÁSICOS
 // -----------------------------------------------------
 
-export type RoleName = 'NORMAL' | 'ADMIN';
+export type RoleName = "NORMAL" | "ADMIN";
 
 export interface Role {
   id: number;
@@ -20,11 +20,11 @@ export interface User {
 }
 
 export type EstadoPedido =
-  | 'PREPARADO'
-  | 'ENTREGADO'
-  | 'DEVUELTO'
-  | 'PENDIENTE_REVISION'
-  | 'FINALIZADO';
+  | "PREPARADO"
+  | "ENTREGADO"
+  | "DEVUELTO"
+  | "PENDIENTE_REVISION"
+  | "FINALIZADO";
 
 export interface Cliente {
   id: number;
@@ -74,9 +74,9 @@ export interface Pedido {
   direccionEntregaId?: number;
   direccionRecogidaId?: number;
   fechaInicio: string; // ISO (YYYY-MM-DD)
-  fechaFin: string;    // ISO
+  fechaFin: string; // ISO
   estado: EstadoPedido;
-  creadoPor: number;   // userId
+  creadoPor: number; // userId
   notas?: string;
 }
 
@@ -84,7 +84,7 @@ export interface LineaPedido {
   id: number;
   pedidoId: number;
   productoId: number;
-  precioDia: number;   // copia del precio del producto en el momento del pedido
+  precioDia: number; // copia del precio del producto en el momento del pedido
   diasAlquiler: number;
   cantidadTotal: number;
   importeLinea: number;
@@ -102,8 +102,8 @@ export interface HistorialEstadoPedido {
   pedidoId: number;
   estadoAnterior?: EstadoPedido;
   estadoNuevo: EstadoPedido;
-  cambiadoPor: number;   // userId
-  fechaCambio: string;   // ISO datetime
+  cambiadoPor: number; // userId
+  fechaCambio: string; // ISO datetime
   observaciones?: string;
 }
 
@@ -131,8 +131,8 @@ export interface PedidoConDetalle extends Pedido {
 
 // Roles
 export const roles: Role[] = [
-  { id: 1, name: 'NORMAL', description: 'Usuario operativo' },
-  { id: 2, name: 'ADMIN', description: 'Administrador del sistema' },
+  { id: 1, name: "NORMAL", description: "Usuario operativo" },
+  { id: 2, name: "ADMIN", description: "Administrador del sistema" },
 ];
 
 // Usuarios
@@ -140,14 +140,14 @@ export const usuarios: User[] = [
   {
     id: 1,
     roleId: 2,
-    name: 'Admin Principal',
-    email: 'admin@alquilerapp.com',
+    name: "Admin Principal",
+    email: "admin@alquilerapp.com",
   },
   {
     id: 2,
     roleId: 1,
-    name: 'Operario 1',
-    email: 'operario1@alquilerapp.com',
+    name: "Operario 1",
+    email: "operario1@alquilerapp.com",
   },
 ];
 
@@ -155,24 +155,24 @@ export const usuarios: User[] = [
 export const clientes: Cliente[] = [
   {
     id: 1,
-    nombre: 'Carlos López',
-    telefono: '612000111',
-    email: 'carlos@example.com',
+    nombre: "Carlos López",
+    telefono: "612000111",
+    email: "carlos@example.com",
     activo: true,
   },
   {
     id: 2,
-    nombre: 'Ana Torres',
-    telefono: '612000222',
-    email: 'ana@example.com',
+    nombre: "Ana Torres",
+    telefono: "612000222",
+    email: "ana@example.com",
     activo: true,
   },
   {
     id: 3,
-    nombre: 'Grupo Evento SL',
-    nifCif: 'B12345678',
-    telefono: '955000333',
-    email: 'contacto@eventosl.com',
+    nombre: "Grupo Evento SL",
+    nifCif: "B12345678",
+    telefono: "955000333",
+    email: "contacto@eventosl.com",
     activo: true,
   },
 ];
@@ -182,34 +182,34 @@ export const direccionesCliente: DireccionCliente[] = [
   {
     id: 1,
     clienteId: 1,
-    alias: 'Casa',
-    linea1: 'Calle Mayor 12',
-    ciudad: 'Madrid',
-    provincia: 'Madrid',
-    codigoPostal: '28013',
-    pais: 'España',
+    alias: "Casa",
+    linea1: "Calle Mayor 12",
+    ciudad: "Madrid",
+    provincia: "Madrid",
+    codigoPostal: "28013",
+    pais: "España",
     esPrincipal: true,
   },
   {
     id: 2,
     clienteId: 2,
-    alias: 'Piso',
-    linea1: 'Avenida del Sol 88',
-    ciudad: 'Valencia',
-    provincia: 'Valencia',
-    codigoPostal: '46001',
-    pais: 'España',
+    alias: "Piso",
+    linea1: "Avenida del Sol 88",
+    ciudad: "Valencia",
+    provincia: "Valencia",
+    codigoPostal: "46001",
+    pais: "España",
     esPrincipal: true,
   },
   {
     id: 3,
     clienteId: 3,
-    alias: 'Almacén principal',
-    linea1: 'Polígono Norte 4',
-    ciudad: 'Sevilla',
-    provincia: 'Sevilla',
-    codigoPostal: '41001',
-    pais: 'España',
+    alias: "Almacén principal",
+    linea1: "Polígono Norte 4",
+    ciudad: "Sevilla",
+    provincia: "Sevilla",
+    codigoPostal: "41001",
+    pais: "España",
     esPrincipal: true,
   },
 ];
@@ -218,22 +218,22 @@ export const direccionesCliente: DireccionCliente[] = [
 export const productos: Producto[] = [
   {
     id: 1,
-    nombre: 'Casco de moto',
-    descripcion: 'Casco integral homologado',
+    nombre: "Casco de moto",
+    descripcion: "Casco integral homologado",
     precioDia: 8,
     activo: true,
   },
   {
     id: 2,
-    nombre: 'Traje de gala',
-    descripcion: 'Traje de etiqueta para eventos',
+    nombre: "Traje de gala",
+    descripcion: "Traje de etiqueta para eventos",
     precioDia: 12,
     activo: true,
   },
   {
     id: 3,
-    nombre: 'Carpa XL',
-    descripcion: 'Carpa para eventos exteriores 5x10m',
+    nombre: "Carpa XL",
+    descripcion: "Carpa para eventos exteriores 5x10m",
     precioDia: 35,
     activo: true,
   },
@@ -242,61 +242,91 @@ export const productos: Producto[] = [
 // Tallas / tamaños
 export const tallasProducto: TallaProducto[] = [
   // Cascos
-  { id: 1, productoId: 1, codigoTalla: 'M', descripcion: 'Talla M', activo: true },
-  { id: 2, productoId: 1, codigoTalla: 'L', descripcion: 'Talla L', activo: true },
+  {
+    id: 1,
+    productoId: 1,
+    codigoTalla: "M",
+    descripcion: "Talla M",
+    activo: true,
+  },
+  {
+    id: 2,
+    productoId: 1,
+    codigoTalla: "L",
+    descripcion: "Talla L",
+    activo: true,
+  },
   // Trajes
-  { id: 3, productoId: 2, codigoTalla: 'M', descripcion: 'Talla M', activo: true },
-  { id: 4, productoId: 2, codigoTalla: 'L', descripcion: 'Talla L', activo: true },
+  {
+    id: 3,
+    productoId: 2,
+    codigoTalla: "M",
+    descripcion: "Talla M",
+    activo: true,
+  },
+  {
+    id: 4,
+    productoId: 2,
+    codigoTalla: "L",
+    descripcion: "Talla L",
+    activo: true,
+  },
   // Carpa XL (único tamaño)
-  { id: 5, productoId: 3, codigoTalla: 'XL', descripcion: 'Tamaño único XL', activo: true },
+  {
+    id: 5,
+    productoId: 3,
+    codigoTalla: "XL",
+    descripcion: "Tamaño único XL",
+    activo: true,
+  },
 ];
 
 // Pedidos
 export const pedidos: Pedido[] = [
   {
     id: 1,
-    codigo: 'P-001',
+    codigo: "P-001",
     clienteId: 1,
     direccionEntregaId: 1,
     direccionRecogidaId: 1,
-    fechaInicio: '2025-12-10',
-    fechaFin: '2025-12-14',
-    estado: 'PREPARADO',
+    fechaInicio: "2025-12-10",
+    fechaFin: "2025-12-14",
+    estado: "PREPARADO",
     creadoPor: 2,
-    notas: 'Entrega por la mañana',
+    notas: "Entrega por la mañana",
   },
   {
     id: 2,
-    codigo: 'P-002',
+    codigo: "P-002",
     clienteId: 2,
     direccionEntregaId: 2,
     direccionRecogidaId: 2,
-    fechaInicio: '2025-12-08',
-    fechaFin: '2025-12-11',
-    estado: 'ENTREGADO',
+    fechaInicio: "2025-12-08",
+    fechaFin: "2025-12-11",
+    estado: "ENTREGADO",
     creadoPor: 2,
   },
   {
     id: 3,
-    codigo: 'P-003',
+    codigo: "P-003",
     clienteId: 3,
     direccionEntregaId: 3,
     direccionRecogidaId: 3,
-    fechaInicio: '2025-12-05',
-    fechaFin: '2025-12-09',
-    estado: 'PENDIENTE_REVISION',
+    fechaInicio: "2025-12-05",
+    fechaFin: "2025-12-09",
+    estado: "PENDIENTE_REVISION",
     creadoPor: 1,
-    notas: 'Revisar posibles daños en carpa',
+    notas: "Revisar posibles daños en carpa",
   },
   {
     id: 4,
-    codigo: 'P-004',
+    codigo: "P-004",
     clienteId: 1,
     direccionEntregaId: 1,
     direccionRecogidaId: 1,
-    fechaInicio: '2025-12-01',
-    fechaFin: '2025-12-03',
-    estado: 'FINALIZADO',
+    fechaInicio: "2025-12-01",
+    fechaFin: "2025-12-03",
+    estado: "FINALIZADO",
     creadoPor: 2,
   },
 ];
@@ -307,7 +337,7 @@ export const lineasPedido: LineaPedido[] = [
   {
     id: 1,
     pedidoId: 1,
-    productoId: 1,  // Casco
+    productoId: 1, // Casco
     precioDia: 8,
     diasAlquiler: 4,
     cantidadTotal: 3,
@@ -316,7 +346,7 @@ export const lineasPedido: LineaPedido[] = [
   {
     id: 2,
     pedidoId: 1,
-    productoId: 2,  // Traje
+    productoId: 2, // Traje
     precioDia: 12,
     diasAlquiler: 4,
     cantidadTotal: 2,
@@ -403,11 +433,11 @@ export const historialEstados: HistorialEstadoPedido[] = [
   {
     id: 1,
     pedidoId: 3,
-    estadoAnterior: 'DEVUELTO',
-    estadoNuevo: 'PENDIENTE_REVISION',
+    estadoAnterior: "DEVUELTO",
+    estadoNuevo: "PENDIENTE_REVISION",
     cambiadoPor: 2,
-    fechaCambio: '2025-12-09T18:30:00Z',
-    observaciones: 'Faltan fotos de la carpa',
+    fechaCambio: "2025-12-09T18:30:00Z",
+    observaciones: "Faltan fotos de la carpa",
   },
 ];
 
@@ -415,27 +445,25 @@ export const historialEstados: HistorialEstadoPedido[] = [
 // -----------------------------------------------------
 
 const wait = (ms = 400) =>
-  new Promise<void>((resolve) => setTimeout(resolve, ms));
+  new Promise<void>((resolve) => setTimeout(resolve, ms)); // Simula latencia de red
 
-const getClienteById = (id: number) =>
-  clientes.find((c) => c.id === id);
+const getClienteById = (id: number) => clientes.find((c) => c.id === id); // Busca cliente por id
 
 const getDireccionById = (id?: number) =>
-  direccionesCliente.find((d) => d.id === id);
+  direccionesCliente.find((d) => d.id === id); // Busca dirección opcional
 
-const getProductoById = (id: number) =>
-  productos.find((p) => p.id === id)!;
+const getProductoById = (id: number) => productos.find((p) => p.id === id)!; // Obtiene producto; asume que existe
 
-const getTallaById = (id: number) =>
-  tallasProducto.find((t) => t.id === id)!;
+const getTallaById = (id: number) => tallasProducto.find((t) => t.id === id)!; // Obtiene talla; asume que existe
 
 // Calcula detalle de líneas y totales de un pedido
 const buildPedidoConDetalle = (pedido: Pedido): PedidoConDetalle => {
   const cliente = getClienteById(pedido.clienteId);
   if (!cliente) {
-    throw new Error(`Cliente ${pedido.clienteId} no encontrado`);
+    throw new Error(`Cliente ${pedido.clienteId} no encontrado`); // Seguridad básica
   }
 
+  // Enlaza cada línea con su producto y tallas
   const lineas = lineasPedido
     .filter((l) => l.pedidoId === pedido.id)
     .map<LineaPedidoConDetalle>((l) => {
@@ -454,15 +482,10 @@ const buildPedidoConDetalle = (pedido: Pedido): PedidoConDetalle => {
       };
     });
 
-  const totalUnidades = lineas.reduce(
-    (sum, l) => sum + l.cantidadTotal,
-    0
-  );
+  // Totales derivados para la UI
+  const totalUnidades = lineas.reduce((sum, l) => sum + l.cantidadTotal, 0);
 
-  const totalImporte = lineas.reduce(
-    (sum, l) => sum + l.importeLinea,
-    0
-  );
+  const totalImporte = lineas.reduce((sum, l) => sum + l.importeLinea, 0);
 
   return {
     ...pedido,
@@ -480,7 +503,7 @@ const buildPedidoConDetalle = (pedido: Pedido): PedidoConDetalle => {
 
 // Listado simple de pedidos con totales (para dashboard)
 export const listPedidosResumen = async (): Promise<PedidoConDetalle[]> => {
-  await wait();
+  await wait(); // Simula llamada a API
   // Podrías ordenar por fecha, estado, etc.
   return pedidos.map(buildPedidoConDetalle);
 };
@@ -488,13 +511,13 @@ export const listPedidosResumen = async (): Promise<PedidoConDetalle[]> => {
 // Pedidos activos (entre fecha inicio y fin, excluyendo finalizados, por ejemplo)
 export const listPedidosActivos = async (): Promise<PedidoConDetalle[]> => {
   await wait();
-  const today = new Date('2025-12-10'); // puedes adaptar o usar new Date()
+  const today = new Date("2025-12-10"); // Fecha fija para ejemplo
   return pedidos
     .filter((p) => {
       const inicio = new Date(p.fechaInicio);
       const fin = new Date(p.fechaFin);
       const isInRange = inicio <= today && fin >= today;
-      const notFinalizado = p.estado !== 'FINALIZADO';
+      const notFinalizado = p.estado !== "FINALIZADO";
       return isInRange && notFinalizado;
     })
     .map(buildPedidoConDetalle);
@@ -504,7 +527,7 @@ export const listPedidosActivos = async (): Promise<PedidoConDetalle[]> => {
 export const getPedidoById = async (
   pedidoId: number
 ): Promise<PedidoConDetalle | null> => {
-  await wait();
+  await wait(); // Simula fetch
   const pedido = pedidos.find((p) => p.id === pedidoId);
   if (!pedido) return null;
   return buildPedidoConDetalle(pedido);
@@ -532,7 +555,7 @@ export const updateEstadoPedido = async (
 
   const pedidoIndex = pedidos.findIndex((p) => p.id === pedidoId);
   if (pedidoIndex === -1) {
-    throw new Error('Pedido no encontrado');
+    throw new Error("Pedido no encontrado");
   }
 
   const anterior = pedidos[pedidoIndex].estado;
@@ -549,4 +572,3 @@ export const updateEstadoPedido = async (
 
   return buildPedidoConDetalle(pedidos[pedidoIndex]);
 };
-

@@ -1,14 +1,7 @@
-import React from "react";
-import { Stack } from "expo-router";
+import React from "react"; // Habilita JSX y componentes
+import { Stack } from "expo-router"; // Navegación basada en la carpeta app/
 
+// Layout raíz: envuelve todas las rutas y oculta la cabecera nativa
 export default function Layout() {
-  return (
-    <Stack initialRouteName="index">
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="home" options={{ headerShown: false }} />
-      <Stack.Screen name="client" options={{ headerShown: false }} />
-      <Stack.Screen name="hooks-demo" options={{ title: "Hooks Demo" }} />
-    </Stack>
-  );
+  return <Stack screenOptions={{ headerShown: false }} />; // Stack gestiona las pantallas detectadas en app/
 }

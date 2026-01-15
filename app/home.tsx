@@ -1,48 +1,65 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { Button } from "react-native-paper";
-import Header from "src/components/Header/header";
+import React from "react"; // Necesario para JSX
+import { View, Text, StyleSheet } from "react-native"; // Primitivas UI
+import { useRouter } from "expo-router"; // Hook para navegar entre pantallas
+import CustomButton from "src/components/Buttons/button"; // Botón primario reutilizable
+import Header from "src/components/Header/header"; // Barra superior con saludo
+import BottomNav, {
+  type BottomNavItem,
+} from "src/components/BottomNav/bottom_nav"; // Barra inferior de navegación
 
 export default function Home() {
-  const router = useRouter();
+  const router = useRouter(); // Instancia de navegación para hacer push a rutas
+
+  // Configuración de pestañas inferiores; marcamos Home como activa
+  const navItems: BottomNavItem[] = [
+    {
+      icon: "home-outline",
+      label: "Home",
+      onPress: () => router.push("/home"),
+      href: "/home",
+      active: true,
+    },
+    { icon: "document-text-outline", label: "Pedidos" },
+    {
+      icon: "people-outline",
+      label: "Clientes",
+      onPress: () => router.push("/client"),
+      href: "/client",
+    },
+    { icon: "cube-outline", label: "Inventario" },
+  ];
 
   return (
-    <View style={styles.header}>
-      <Header name="Usuario" />
+    <View style={styles.container}>
+      {/* Header con saludo y avatar que navega a login */}
+      <Header
+        name="Hola Usuario!"
+        onAvatarPress={() => router.push("/login")}
+      />
 
+      {/* Zona central con CTA principal hacia clientes */}
       <View style={styles.content}>
-        <Button mode="contained" onPress={() => router.push("/client")}>
-          Clientes
-        </Button>
-        <Button
-          style={{ marginTop: 8 }}
-          mode="outlined"
-          onPress={() => router.push("/login")}
-        >
-          Salir
-        </Button>
+        <CustomButton text="Clientes" onPress={() => router.push("/client")} />
         <Text style={styles.welcome}></Text>
       </View>
-      <View style={styles.bottom_menu}>
-        Aquí pondré el menú de abajo, de momento lo he hecho así
-      </View>
+
+      {/* Barra inferior sin botón flotante */}
+      <BottomNav items={navItems} showFab={false} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
+  container: {
     flex: 1,
     backgroundColor: "#fff",
   },
   content: {
-    padding: 16,
-    backgroundColor: "#d6cd1fff",
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    paddingBottom: 120,
   },
-  bottom_menu: {
-    backgroundColor: "#1fd637ff",
-  },
+
   welcome: {
     fontSize: 16,
   },

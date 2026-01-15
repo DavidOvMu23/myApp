@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"; // JSX
 import {
   TouchableOpacity,
   Text,
   StyleSheet,
   GestureResponderEvent,
-} from "react-native";
+} from "react-native"; // Botón táctil, texto y tipos de evento
 
 interface TextButtonProps {
   text: string;
@@ -14,6 +14,7 @@ interface TextButtonProps {
 const TextButton = ({ text, onPress }: TextButtonProps) => {
   return (
     <TouchableOpacity onPress={onPress}>
+      {/* Parece un enlace: solo texto coloreado */}
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );

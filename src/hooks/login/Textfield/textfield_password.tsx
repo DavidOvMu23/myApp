@@ -1,17 +1,20 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { TextInput } from "react-native-paper";
+import React from "react"; // JSX
+import { View, StyleSheet } from "react-native"; // Contenedor
+import { TextInput } from "react-native-paper"; // Input estilo Material
 
+// Componente de campo de texto para la entrada de contraseña
 interface TextfieldPasswordProps {
   value: string;
   onChangeText: (text: string) => void;
 }
 
+// Componente funcional que representa un campo de texto para la contraseña
 export const TextfieldPassword = ({
   value,
   onChangeText,
 }: TextfieldPasswordProps) => {
   return (
+    // Vista contenedora para el campo de texto de la contraseña
     <View style={styles.container}>
       <TextInput
         mode="outlined"
@@ -37,6 +40,7 @@ export const TextfieldPassword = ({
   );
 };
 
+// Estilos para el componente TextfieldPassword
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,

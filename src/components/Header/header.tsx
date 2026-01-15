@@ -1,14 +1,22 @@
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React from "react"; // JSX
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native"; // UI base
 
+// Componente de encabezado que muestra un saludo, la fecha actual y un avatar
 interface Props {
   name?: string;
+  onAvatarPress?: () => void;
+  avatarUri?: string;
 }
 
-export default function Header({ name = "Usuario" }: Props) {
-  const today = new Date();
+// Componente funcional que representa el encabezado
+export default function Header({
+  name = "Usuario",
+  onAvatarPress,
+  avatarUri = "https://i.pravatar.cc/150?img=12",
+}: Props) {
+  const today = new Date(); // Fecha actual
 
-  /* Lo de la fecha me lo ha hecho el chat*/
+  // Formatea fecha en español (ej: 12 de enero de 2026)
   const formatted = today.toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "long",
@@ -18,18 +26,18 @@ export default function Header({ name = "Usuario" }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        <Text style={styles.greeting}>Hola {name}!</Text>
+        <Text style={styles.greeting}>{name}</Text>
         <Text style={styles.date}>{formatted}</Text>
       </View>
 
-      <View style={styles.avatarContainer}>
-        <Image
-          source={{
-            uri: "https://cdn-3.expansion.mx/dims4/default/3ed2e74/2147483647/strip/true/crop/1000x1000+0+0/resize/1800x1800!/format/webp/quality/80/?url=https%3A%2F%2Fcdn-3.expansion.mx%2F98%2F48%2Fccf56493491f89ad68225c2fba92%2Fgeorge-floyd.jpg",
-          }}
-          style={styles.avatar}
-        />
-      </View>
+      {/* Avatar pulsable; dispara onAvatarPress si se pasa */}
+      <TouchableOpacity
+        style={styles.avatarContainer}
+        onPress={onAvatarPress}
+        activeOpacity={0.8}
+      >
+        <Image source={{ uri: avatarUri }} style={styles.avatar} />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -42,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#2563eb",
+    backgroundColor: "#231e8cff",
   },
   left: {
     flexDirection: "column",
@@ -50,10 +58,11 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#ffffffff",
   },
   date: {
     fontSize: 12,
-    color: "#666",
+    color: "#b4b4b4ff",
     marginTop: 2,
   },
   avatarContainer: {
@@ -61,9 +70,11 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     overflow: "hidden",
-    backgroundColor: "#eee",
+    backgroundColor: "#e5e7eb",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#d1d5db",
   },
   avatar: {
     width: "100%",

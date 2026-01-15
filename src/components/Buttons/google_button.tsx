@@ -1,6 +1,6 @@
-import React from "react";
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import React from "react"; // JSX
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native"; // UI base
+import { FontAwesome } from "@expo/vector-icons"; // Icono de Google
 
 interface GoogleButtonProps {
   text?: string;
@@ -9,6 +9,7 @@ interface GoogleButtonProps {
 const GoogleButton = ({ text = "Continúa con Google" }: GoogleButtonProps) => {
   return (
     <TouchableOpacity style={styles.button}>
+      {/* Icono + texto alineados en fila */}
       <FontAwesome name="google" size={20} color="#EA4335" />
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>

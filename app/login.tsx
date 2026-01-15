@@ -1,47 +1,22 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { useRouter } from "expo-router";
-
-import LockIcon from "../src/hooks/login/LockIcon/lock_icon";
-import TextfieldEmail from "../src/hooks/login/Textfield/textfield_email";
-import TextfieldPassword from "../src/hooks/login/Textfield/textfield_password";
-import TextButton from "../src/components/Buttons/text_button";
-import Button from "../src/components/Buttons/button";
-import GoogleButton from "../src/components/Buttons/google_button";
+import React, { useState } from "react"; // useState para controlar inputs
+import { View, StyleSheet, Text } from "react-native"; // Primitivas de layout
+import { useRouter } from "expo-router"; // Navegación
+import LockIcon from "../src/hooks/login/LockIcon/lock_icon"; // Icono decorativo
+import TextfieldEmail from "../src/hooks/login/Textfield/textfield_email"; // Input de email
+import TextfieldPassword from "../src/hooks/login/Textfield/textfield_password"; // Input de password
+import TextButton from "../src/components/Buttons/text_button"; // Botón de texto
+import Button from "../src/components/Buttons/button"; // Botón principal
+import GoogleButton from "../src/components/Buttons/google_button"; // Botón Google
 
 export default function Login() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const isLoginDisabled = !email.trim() || !password.trim();
-
-  // Guard to surface which import is invalid instead of throwing a cryptic React error
-  const components = {
-    LockIcon,
-    TextfieldEmail,
-    TextfieldPassword,
-    Button,
-    GoogleButton,
-    TextButton,
-  };
-
-  const invalidEntries = Object.entries(components).filter(
-    ([, comp]) => typeof comp !== "function"
-  );
-
-  if (invalidEntries.length) {
-    console.error("Componente no es función", invalidEntries);
-    return (
-      <View style={styles.container}>
-        <Text>
-          Componente inválido: {invalidEntries.map(([name]) => name).join(", ")}
-        </Text>
-      </View>
-    );
-  }
+  const router = useRouter(); // Para navegar tras iniciar sesión
+  const [email, setEmail] = useState(""); // Estado controlado del email
+  const [password, setPassword] = useState(""); // Estado controlado del password
+  const isLoginDisabled = !email.trim() || !password.trim(); // Valida campos vacíos
 
   return (
     <View style={styles.container}>
+      {/* Logotipo/ícono principal */}
       <LockIcon />
 
       <Text style={styles.title}>Bienvenido</Text>
@@ -52,6 +27,7 @@ export default function Login() {
       <View style={styles.formContainer}>
         <Text style={styles.label}>Correo Electrónico</Text>
 
+        {/* Campo controlado: email */}
         <TextfieldEmail value={email} onChangeText={(text) => setEmail(text)} />
 
         <View style={styles.passwordLabelContainer}>
@@ -59,25 +35,30 @@ export default function Login() {
           <TextButton text="¿Olvidaste tu contraseña?" />
         </View>
 
+        {/* Campo controlado: password */}
         <TextfieldPassword
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
 
+        {/* Botón principal; bloqueado si faltan datos */}
         <Button
           text="Iniciar Sesión"
           disabled={isLoginDisabled}
           onPress={() => router.replace("/home")}
         />
 
+        {/* Separador visual */}
         <View style={[styles.dividerContainer, { marginTop: 30 }]}>
           <View style={styles.line} />
           <Text style={styles.dividerText}>O continúa con</Text>
           <View style={styles.line} />
         </View>
 
+        {/* Login alternativo */}
         <GoogleButton text="Google" />
 
+        {/* CTA de registro */}
         <View style={styles.signupContainer}>
           <Text style={styles.signupText}>¿No tienes una cuenta?</Text>
           <TextButton text="Regístrate ahora" />

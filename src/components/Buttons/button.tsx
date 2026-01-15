@@ -1,6 +1,6 @@
 /* Este archivo es para crear un botón personalizado */
-import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import React from "react"; // JSX
+import { TouchableOpacity, Text, StyleSheet } from "react-native"; // Componentes básicos
 
 /* el interface este es para definir las propiedades que el botón puede recibir */
 interface ButtonProps {
@@ -27,7 +27,7 @@ const Button = ({ text, disabled = false, onPress }: ButtonProps) => {
 /* aquí definimos los estilos para el botón */
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#ddbd30ff",
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   disabledButton: {
-    backgroundColor: "#a5a3e1",
+    backgroundColor: "#ecd985ff",
   },
   text: {
     fontSize: 16,
