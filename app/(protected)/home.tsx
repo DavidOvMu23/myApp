@@ -98,23 +98,6 @@ export default function Home() {
         <CustomButton text="Preferencias" onPress={handlePreferencesPress} />
       </View>
 
-      {/* Mensaje contextual para recordar permisos o ayudas */}
-      <View
-        style={[
-          styles.messageBox,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-        ]}
-      >
-        <Text style={[styles.messageTitle, { color: colors.text }]}>
-          Consejo
-        </Text>
-        <Text style={[styles.messageText, { color: colors.muted }]}>
-          {isAdmin
-            ? "Como admin puedes crear y eliminar clientes."
-            : "Como usuario estándar puedes consultar y editar datos permitidos."}
-        </Text>
-      </View>
-
       {/* Barra inferior con navegación y FAB solo para admins */}
       <BottomNav
         items={navItems}

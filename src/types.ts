@@ -149,6 +149,12 @@ export const usuarios: User[] = [
     name: "Operario 1",
     email: "operario1@alquilerapp.com",
   },
+  {
+    id: 3,
+    roleId: 2,
+    name: "Admin",
+    email: "a@a.com",
+  },
 ];
 
 // Clientes
@@ -525,7 +531,7 @@ export const listPedidosActivos = async (): Promise<PedidoConDetalle[]> => {
 
 // Obtener detalle de un pedido concreto
 export const getPedidoById = async (
-  pedidoId: number
+  pedidoId: number,
 ): Promise<PedidoConDetalle | null> => {
   await wait(); // Simula fetch
   const pedido = pedidos.find((p) => p.id === pedidoId);
@@ -540,7 +546,7 @@ export const listClientes = async (): Promise<Cliente[]> => {
 };
 
 export const getClienteById = async (
-  clienteId: number
+  clienteId: number,
 ): Promise<Cliente | null> => {
   await wait();
   return clientes.find((c) => c.id === clienteId) ?? null;
@@ -549,7 +555,7 @@ export const getClienteById = async (
 export type NewClienteInput = Omit<Cliente, "id">;
 
 export const createCliente = async (
-  data: NewClienteInput
+  data: NewClienteInput,
 ): Promise<Cliente> => {
   await wait();
   const nextId = clientes.length
@@ -572,7 +578,7 @@ export type UpdateClienteInput = Partial<Omit<Cliente, "id">>;
 
 export const updateCliente = async (
   clienteId: number,
-  data: UpdateClienteInput
+  data: UpdateClienteInput,
 ): Promise<Cliente | null> => {
   await wait();
   const index = clientes.findIndex((c) => c.id === clienteId);
@@ -605,7 +611,7 @@ export const listProductos = async (): Promise<Producto[]> => {
 export const updateEstadoPedido = async (
   pedidoId: number,
   nuevoEstado: EstadoPedido,
-  userId: number
+  userId: number,
 ): Promise<PedidoConDetalle> => {
   await wait();
 
