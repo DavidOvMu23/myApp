@@ -1,5 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 // Componente de encabezado que muestra un saludo, la fecha actual y un avatar de usuario
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 }
 
 // Definimos el componente del header
+// Envolvemos el header en SafeAreaView para evitar que la barra se corte en móviles con notch o barra de estado
 export default function Header({
   name = "Usuario",
   onAvatarPress,
@@ -16,6 +19,8 @@ export default function Header({
 }: Props) {
   // Sacamos la fecha de hoy
   const today = new Date();
+  // Traemos la paleta actual para que el header respete claro/oscuro
+  const { colors } = useThemePreference();
 
   // Formateamos la fecha en español (esto me lo dio el chatGPT)
   const formatted = today.toLocaleDateString("es-ES", {
@@ -25,25 +30,33 @@ export default function Header({
   });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.left}>
-        <Text style={styles.greeting}>{name}</Text>
-        <Text style={styles.date}>{formatted}</Text>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.primary }]}>
+      <View style={styles.container}>
+        <View style={styles.left}>
+          <Text style={[styles.greeting, { color: colors.contrastText }]}>
+            {name}
+          </Text>
+          <Text style={[styles.date, { color: colors.contrastText }]}>
+            {formatted}
+          </Text>
+        </View>
+        {/* Dejamos el avatar como botón si pulsamos en él */}
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          onPress={onAvatarPress}
+          activeOpacity={0.8}
+        >
+          <Image source={{ uri: avatarUri }} style={styles.avatar} />
+        </TouchableOpacity>
       </View>
-
-      {/* Dejamos el avatar como botón si pulsamos en él */}
-      <TouchableOpacity
-        style={styles.avatarContainer}
-        onPress={onAvatarPress}
-        activeOpacity={0.8}
-      >
-        <Image source={{ uri: avatarUri }} style={styles.avatar} />
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    width: "100%",
+  },
   container: {
     width: "100%",
     paddingHorizontal: 16,
@@ -51,7 +64,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#231e8cff",
   },
   left: {
     flexDirection: "column",
@@ -59,11 +71,9 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#ffffffff",
   },
   date: {
     fontSize: 12,
-    color: "#b4b4b4ff",
     marginTop: 2,
   },
   avatarContainer: {

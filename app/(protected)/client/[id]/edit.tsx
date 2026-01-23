@@ -4,6 +4,7 @@ import { TextInput } from "react-native-paper";
 import Header from "src/components/Header/header";
 import CustomButton from "src/components/Buttons/button";
 import useEditClient from "src/hooks/useEditClient";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 export default function EditClient() {
   // Obtenemos carga, estado del formulario y navegación desde el hook
@@ -21,11 +22,14 @@ export default function EditClient() {
     handleSave,
     handleCancel,
     textInputProps,
+    iconColor,
   } = useEditClient();
+  const { colors } = useThemePreference();
 
+  // Si no encontramos el cliente, mostramos mensaje de error
   if (notFound) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Header name="Editar cliente" />
         <View style={styles.notFound}>
           <Text style={styles.notFoundTitle}>Cliente no encontrado</Text>
@@ -33,18 +37,22 @@ export default function EditClient() {
             Vuelve a la lista y selecciona otro cliente.
           </Text>
           <View style={{ height: 12 }} />
+          {/* Botón que usa handleCancel del hook para volver atrás */}
           <CustomButton text="Volver" onPress={handleCancel} />
         </View>
       </View>
     );
   }
 
+  // Renderizamos el formulario de edición de cliente
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Header name={`Editar ${clientName ?? "cliente"}`} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Datos del cliente</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.text }]}>
+          Datos del cliente
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.muted }]}>
           Actualiza los campos y guarda para aplicar los cambios.
         </Text>
 
@@ -54,9 +62,15 @@ export default function EditClient() {
           label="Nombre"
           value={nombre}
           onChangeText={setNombre}
+          // textInputProps trae estilos y colores tematizados del hook
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="account-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="account-outline" color={iconColor} />}
         />
 
         {/* Editamos el email y lo guardamos en `email` */}
@@ -68,7 +82,12 @@ export default function EditClient() {
           onChangeText={setEmail}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="email-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="email-outline" color={iconColor} />}
         />
 
         {/* Editamos el teléfono y lo guardamos en `telefono` */}
@@ -80,7 +99,12 @@ export default function EditClient() {
           onChangeText={setTelefono}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="phone-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="phone-outline" color={iconColor} />}
         />
 
         {/* Editamos el NIF/CIF y lo guardamos en `nif` */}
@@ -91,10 +115,15 @@ export default function EditClient() {
           onChangeText={setNif}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
           left={
             <TextInput.Icon
               icon="card-account-details-outline"
-              color="#6b7280"
+              color={iconColor}
             />
           }
         />
@@ -113,7 +142,6 @@ export default function EditClient() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7fb",
   },
   content: {
     padding: 16,

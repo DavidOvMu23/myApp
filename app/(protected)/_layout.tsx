@@ -1,14 +1,16 @@
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { Redirect } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { useAuth } from "src/providers/AuthProvider";
 import { useThemePreference } from "src/providers/ThemeProvider";
 
-// Punto de entrada: decidimos a dónde ir según el estado de auth
-export default function Index() {
+// Blindamos las rutas privadas: si la sesión no está lista, mostramos loading o mandamos al login
+
+export default function ProtectedLayout() {
   const { status } = useAuth();
   const { colors } = useThemePreference();
 
+  // Si el estado de auth está comprobándose, mostramos un loader
   if (status === "checking") {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -17,13 +19,13 @@ export default function Index() {
     );
   }
 
-  // si el usuario está autenticado, lo enviamos a la pantalla principal sin q inicie sesión
-  if (status === "authenticated") {
-    return <Redirect href="/home" />;
+  // Si el usuario no está autenticado, lo mandamos al login
+  if (status === "unauthenticated") {
+    return <Redirect href="/login" />;
   }
 
-  //si no , pues le enviamos a iniciar sesión
-  return <Redirect href="/login" />;
+  // Si está autenticado, mostramos las pantallas protegidas
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
 
 const styles = StyleSheet.create({

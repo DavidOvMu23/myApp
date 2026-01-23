@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
 import { Alert, Platform } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
+import { useUserStore } from "src/stores/userStore";
 import {
   deleteCliente,
   getClienteById,
   pedidos,
   type Cliente,
 } from "src/types";
-import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
 
 export default function useClientDetail() {
   // Usamos el router para movernos entre pantallas
@@ -18,9 +19,13 @@ export default function useClientDetail() {
   // Guardamos el cliente y el estado de carga
   const [client, setClient] = useState<Cliente | null>(null);
   const [loading, setLoading] = useState(true);
+  // Leemos el usuario actual para permisos
+  const user = useUserStore((state) => state.user);
+  const canDelete = user?.roleName === "ADMIN";
 
   // Cargamos el cliente cuando entramos o volvemos a esta pantalla
   const loadClient = useCallback(() => {
+    // Flag de montaje para no actualizar estado si salimos antes de resolver la promesa
     let active = true;
     setLoading(true);
     getClienteById(clientId).then((data) => {
@@ -60,7 +65,6 @@ export default function useClientDetail() {
         onPress: goHome,
         href: "/home",
       },
-      { icon: "document-text-outline", label: "Pedidos" },
       {
         icon: "people-outline",
         label: "Clientes",
@@ -68,19 +72,24 @@ export default function useClientDetail() {
         href: "/client",
         active: true,
       },
-      { icon: "cube-outline", label: "Inventario" },
+      { icon: "person-circle-outline", label: "Perfil", href: "/profile" },
+      { icon: "settings-outline", label: "Preferencias", href: "/preferences" },
     ],
     [goClients, goHome],
   );
 
   // Atajo para editar el cliente actual
   const handleEdit = useCallback(() => {
+    // Usamos el id del cliente ya cargado; si no está, no navegamos
     if (!client) return;
     router.push(`/client/${client.id}/edit`);
   }, [client, router]);
 
   // Confirmamos y borramos el cliente
   const handleDelete = useCallback(() => {
+    // Solo administradores pueden disparar este flujo
+    if (!canDelete) return;
+
     const confirmDelete = async () => {
       const deleted = await deleteCliente(clientId);
       if (deleted) {
@@ -111,7 +120,7 @@ export default function useClientDetail() {
         },
       },
     ]);
-  }, [clientId, router]);
+  }, [canDelete, clientId, router]);
 
   return {
     client,
@@ -120,5 +129,6 @@ export default function useClientDetail() {
     navItems,
     handleEdit,
     handleDelete,
+    canDelete,
   };
 }

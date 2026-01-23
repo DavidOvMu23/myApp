@@ -5,6 +5,7 @@ import {
   StyleSheet,
   GestureResponderEvent,
 } from "react-native";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 //definimos las propiedades que puede recibir el botón
 interface TextButtonProps {
@@ -13,10 +14,12 @@ interface TextButtonProps {
 }
 
 const TextButton = ({ text, onPress }: TextButtonProps) => {
+  const { colors } = useThemePreference();
+
   return (
     <TouchableOpacity onPress={onPress}>
-      {/* Dejamos el texto con estilo tipo enlace */}
-      <Text style={styles.text}>{text}</Text>
+      {/* Dejamos el texto con estilo tipo enlace para acciones secundarias */}
+      <Text style={[styles.text, { color: colors.primary }]}>{text}</Text>
     </TouchableOpacity>
   );
 };
@@ -25,7 +28,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#4f46e5",
     marginBottom: 0,
   },
 });

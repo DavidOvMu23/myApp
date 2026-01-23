@@ -1,8 +1,17 @@
 import React from "react";
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { AuthProvider } from "src/providers/AuthProvider";
+import { ThemeProvider } from "src/providers/ThemeProvider";
 
-// Envolvemos la app para que Expo Router maneje las pantallas
+// Envolvemos toda la aplicación con proveedores globales (tema + auth)
 export default function Layout() {
-  // Usamos un stack para navegar entre pantallas
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <StatusBar style="auto" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }

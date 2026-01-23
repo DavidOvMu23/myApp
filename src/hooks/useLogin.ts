@@ -1,18 +1,21 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
+import { useAuth } from "src/providers/AuthProvider";
 
 export default function useLogin() {
   // Usamos el router para movernos después del login
   const router = useRouter();
+  const { login, isBusy } = useAuth();
   // Guardamos el email que llega desde el input
   const [email, setEmail] = useState("");
   // Guardamos la contraseña que llega desde el input
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   // Calculamos si el botón debe estar desactivado según el estado
   const isLoginDisabled = useMemo(
-    () => !email.trim() || !password.trim(),
-    [email, password],
+    () => !email.trim() || !password.trim() || isBusy,
+    [email, isBusy, password],
   );
 
   // Guardamos cambios del input de email
@@ -26,14 +29,28 @@ export default function useLogin() {
   }, []);
 
   // Navegamos al home tras un login correcto
-  const handleSubmit = useCallback(() => {
-    router.replace("/home");
-  }, [router]);
+  const handleSubmit = useCallback(async () => {
+    // Reiniciamos error antes de lanzar la petición de login
+    setError(null);
+    try {
+      // Pasamos email/password al provider; si falla, guardamos mensaje para la UI
+      await login(email, password);
+      router.replace("/home");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No se pudo iniciar sesión. Inténtalo de nuevo.",
+      );
+    }
+  }, [email, login, password, router]);
 
   return {
     email,
     password,
     isLoginDisabled,
+    isSubmitting: isBusy,
+    error,
     handleEmailChange,
     handlePasswordChange,
     handleSubmit,

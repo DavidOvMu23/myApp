@@ -4,6 +4,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, type Href } from "expo-router";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 // Definimos el tipo de cada elemento de la barra inferior
 export type BottomNavItem = {
@@ -28,22 +29,40 @@ export default function BottomNav({
   onFabPress,
   showFab = true,
 }: Props) {
+  const { colors, isDark } = useThemePreference();
+  // Colores de tabs: activo con contraste, inactivo suavizado para que destaque el seleccionado
+  const activeColor = isDark ? "#ffffff" : "#0f172a";
+  const inactiveColor = isDark
+    ? "rgba(255,255,255,0.58)"
+    : "rgba(15,23,42,0.6)";
+
   return (
     <>
       {/* Mostramos el botón flotante si lo necesitamos*/}
       {showFab && (
         <View style={styles.fabContainer}>
-          <TouchableOpacity style={styles.fab} onPress={onFabPress}>
-            <Ionicons name={fabIcon} size={26} color="#111827" />
+          <TouchableOpacity
+            style={[
+              styles.fab,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+            onPress={onFabPress}
+          >
+            <Ionicons name={fabIcon} size={26} color={colors.text} />
           </TouchableOpacity>
         </View>
       )}
 
       {/* Pintamos la barra inferior con las pestañas */}
-      <View style={styles.tabBar}>
+      <View
+        style={[
+          styles.tabBar,
+          { backgroundColor: colors.primary, borderColor: colors.border },
+        ]}
+      >
         {items.map((item) => {
           // Cambiamos el color si la pestaña está activa
-          const color = item.active ? "#ffffffff" : "#8f8f8fff";
+          const color = item.active ? activeColor : inactiveColor;
           const content = (
             <View style={styles.tabItem}>
               <Ionicons name={item.icon} size={24} color={color} />
@@ -86,9 +105,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 82,
-    backgroundColor: "#231e8cff",
     borderTopWidth: 1,
-    borderColor: "#ffffffff",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
@@ -104,7 +121,6 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 12,
-    color: "#111827",
   },
   fabContainer: {
     position: "absolute",
@@ -116,9 +132,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#111827",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",

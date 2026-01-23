@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 //definimos las propiedades que puede recibir el botón
 interface GoogleButtonProps {
@@ -8,11 +9,19 @@ interface GoogleButtonProps {
 }
 
 const GoogleButton = ({ text = "Continúa con Google" }: GoogleButtonProps) => {
+  const { colors } = useThemePreference();
+
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity
+      style={[
+        styles.button,
+        // Fondo neutro y borde del tema para que el botón se integre en claro/oscuro
+        { borderColor: colors.border, backgroundColor: colors.surface },
+      ]}
+    >
       {/* Ponemos el icono y el texto alineados */}
       <FontAwesome name="google" size={20} color="#EA4335" />
-      <Text style={styles.text}>{text}</Text>
+      <Text style={[styles.text, { color: colors.text }]}>{text}</Text>
     </TouchableOpacity>
   );
 };
@@ -23,7 +32,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#D0D0D0",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -33,7 +41,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
   },
 });
 

@@ -1,12 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
 import { TextInput, type TextInputProps } from "react-native-paper";
-import { createCliente } from "src/types";
 import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
+import { useThemePreference } from "src/providers/ThemeProvider";
+import { useUserStore } from "src/stores/userStore";
+import { createCliente } from "src/types";
 
 export default function useNewClient() {
   // Usamos el router para volver o ir al detalle
   const router = useRouter();
+  const user = useUserStore((state) => state.user);
+  const isAdmin = user?.roleName === "ADMIN";
+  const { colors, isDark } = useThemePreference();
   // Guardamos los estados del formulario que vienen de los inputs
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -18,6 +23,8 @@ export default function useNewClient() {
 
   // Creamos el cliente con lo que escribimos en el formulario
   const handleSave = useCallback(async () => {
+    // Si no es admin, ignoramos la acción aunque el botón estuviera oculto
+    if (!isAdmin) return;
     const nuevo = await createCliente({
       nombre: nombre.trim(),
       email: email.trim() || undefined,
@@ -26,7 +33,7 @@ export default function useNewClient() {
       activo: true,
     });
     router.replace(`/client/${nuevo.id}`);
-  }, [email, nif, nombre, router, telefono]);
+  }, [email, isAdmin, nif, nombre, router, telefono]);
 
   // Cancelamos y volvemos atrás
   const handleCancel = useCallback(() => {
@@ -50,7 +57,6 @@ export default function useNewClient() {
         onPress: goHome,
         href: "/home",
       },
-      { icon: "document-text-outline", label: "Pedidos" },
       {
         icon: "people-outline",
         label: "Clientes",
@@ -58,15 +64,39 @@ export default function useNewClient() {
         href: "/client",
         active: true,
       },
-      { icon: "cube-outline", label: "Inventario" },
+      { icon: "person-circle-outline", label: "Perfil", href: "/profile" },
+      { icon: "settings-outline", label: "Preferencias", href: "/preferences" },
     ],
     [goClients, goHome],
   );
 
-  // Compartimos estilos base para los TextInput
-  const textInputProps: Pick<TextInputProps, "outlineStyle" | "style"> = {
-    outlineStyle: { borderRadius: 12 },
-    style: { backgroundColor: "#fafafa" },
+  useEffect(() => {
+    // Guardia adicional: si no eres admin, redirigimos fuera de esta ruta
+    if (isAdmin) return;
+    router.replace("/client");
+  }, [isAdmin, router]);
+
+  // Compartimos estilos base para los TextInput, adaptados a tema para que no encandilen en oscuro
+  const fieldBackground = isDark ? "#111b2a" : "#f8fafc";
+  const placeholderColor = isDark ? "rgba(179,192,207,0.72)" : "#9ca3af";
+
+  const textInputProps: Pick<
+    TextInputProps,
+    | "outlineStyle"
+    | "style"
+    | "outlineColor"
+    | "activeOutlineColor"
+    | "textColor"
+    | "placeholderTextColor"
+    | "selectionColor"
+  > = {
+    outlineStyle: { borderRadius: 12, borderColor: colors.border },
+    style: { backgroundColor: fieldBackground },
+    outlineColor: colors.border,
+    activeOutlineColor: colors.primary,
+    textColor: colors.text,
+    placeholderTextColor: placeholderColor,
+    selectionColor: `${colors.primary}99`,
   };
 
   return {
@@ -83,5 +113,7 @@ export default function useNewClient() {
     handleSave,
     handleCancel,
     textInputProps,
+    iconColor: placeholderColor,
+    isAdmin,
   };
 }

@@ -5,6 +5,7 @@ import CustomButton from "src/components/Buttons/button";
 import BottomNav from "src/components/BottomNav/bottom_nav";
 import { TextInput } from "react-native-paper";
 import useNewClient from "src/hooks/useNewClient";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 export default function NewClient() {
   // Obtenemos estado, validaciones y navegación desde el hook
@@ -22,14 +23,37 @@ export default function NewClient() {
     handleSave,
     handleCancel,
     textInputProps,
+    isAdmin,
+    iconColor,
   } = useNewClient();
+  const { colors } = useThemePreference();
 
+  // Si no es admin, mostramos mensaje de restricción
+  if (!isAdmin) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Header name="Nuevo cliente" />
+        <View style={styles.content}>
+          <Text style={styles.subtitle}>
+            Solo los administradores pueden crear clientes.
+          </Text>
+          <View style={{ height: 12 }} />
+          {/* Volvemos a la pantalla anterior usando el handler del hook */}
+          <CustomButton text="Volver" onPress={handleCancel} />
+        </View>
+      </View>
+    );
+  }
+
+  // Renderizamos el formulario de creación de nuevo cliente
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Header name="Nuevo cliente" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Crear cliente</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.text }]}>
+          Crear cliente
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.muted }]}>
           Añade los datos básicos y guarda para crear el cliente.
         </Text>
 
@@ -39,9 +63,15 @@ export default function NewClient() {
           label="Nombre"
           value={nombre}
           onChangeText={setNombre}
+          // textInputProps agrupa estilos base y colores según el tema
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="account-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="account-outline" color={iconColor} />}
         />
 
         {/* Escribimos el email y lo guardamos en `email` */}
@@ -53,7 +83,12 @@ export default function NewClient() {
           onChangeText={setEmail}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="email-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="email-outline" color={iconColor} />}
         />
 
         {/* Escribimos el teléfono y lo guardamos en `telefono` */}
@@ -65,7 +100,12 @@ export default function NewClient() {
           onChangeText={setTelefono}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
-          left={<TextInput.Icon icon="phone-outline" color="#6b7280" />}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
+          left={<TextInput.Icon icon="phone-outline" color={iconColor} />}
         />
 
         {/* Escribimos el NIF/CIF y lo guardamos en `nif` */}
@@ -76,10 +116,15 @@ export default function NewClient() {
           onChangeText={setNif}
           style={textInputProps.style}
           outlineStyle={textInputProps.outlineStyle}
+          outlineColor={textInputProps.outlineColor}
+          activeOutlineColor={textInputProps.activeOutlineColor}
+          textColor={textInputProps.textColor}
+          placeholderTextColor={textInputProps.placeholderTextColor}
+          selectionColor={textInputProps.selectionColor}
           left={
             <TextInput.Icon
               icon="card-account-details-outline"
-              color="#6b7280"
+              color={iconColor}
             />
           }
         />
@@ -103,7 +148,6 @@ export default function NewClient() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7fb",
   },
   content: {
     padding: 16,

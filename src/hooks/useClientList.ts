@@ -1,16 +1,21 @@
 import { useCallback, useMemo, useState } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
-import { listClientes, type Cliente } from "src/types";
 import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
+import { useUserStore } from "src/stores/userStore";
+import { listClientes, type Cliente } from "src/types";
 
 export default function useClientList() {
   // Usamos el router para movernos entre pantallas
   const router = useRouter();
   // Guardamos la lista de clientes que pintamos en la pantalla
   const [items, setItems] = useState<Cliente[]>([]);
+  // Leemos el usuario actual para permisos
+  const user = useUserStore((state) => state.user);
+  const isAdmin = user?.roleName === "ADMIN";
 
   // Recargamos los clientes cuando volvemos a esta pantalla
   const loadClientes = useCallback(() => {
+    // Evitamos setState en desmontado con un flag local
     let active = true;
     listClientes().then((data) => {
       if (active) setItems(data);
@@ -35,6 +40,7 @@ export default function useClientList() {
   // Navegamos al detalle del cliente pulsado
   const handleOpenClient = useCallback(
     (id: number) => {
+      // id llega desde el item pulsado en la lista
       router.push(`/client/${id}`);
     },
     [router],
@@ -42,8 +48,10 @@ export default function useClientList() {
 
   // Atajo para crear un cliente nuevo
   const handleCreate = useCallback(() => {
+    // Solo admins ven/usan el FAB; protegemos también aquí
+    if (!isAdmin) return;
     router.push("/client/new");
-  }, [router]);
+  }, [isAdmin, router]);
 
   // Definimos la barra inferior con Clientes activo
   const navItems = useMemo<BottomNavItem[]>(
@@ -54,7 +62,6 @@ export default function useClientList() {
         onPress: goHome,
         href: "/home",
       },
-      { icon: "document-text-outline", label: "Pedidos" },
       {
         icon: "people-outline",
         label: "Clientes",
@@ -62,7 +69,16 @@ export default function useClientList() {
         href: "/client",
         active: true,
       },
-      { icon: "cube-outline", label: "Inventario" },
+      {
+        icon: "person-circle-outline",
+        label: "Perfil",
+        href: "/profile",
+      },
+      {
+        icon: "settings-outline",
+        label: "Preferencias",
+        href: "/preferences",
+      },
     ],
     [goClients, goHome],
   );
@@ -72,5 +88,6 @@ export default function useClientList() {
     navItems,
     handleOpenClient,
     handleCreate,
+    canCreate: isAdmin,
   };
 }

@@ -1,51 +1,67 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "expo-router";
 import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
+import { useUserStore } from "src/stores/userStore";
 
 export default function useHome() {
-  // Usamos el router para movernos entre pantallas
   const router = useRouter();
+  const user = useUserStore((state) => state.user);
 
-  // Navegamos a Home (dejamos activo en la barra inferior)
   const goHome = useCallback(() => {
     router.push("/home");
   }, [router]);
 
-  // Abrimos la sección de clientes
   const goClients = useCallback(() => {
     router.push("/client");
   }, [router]);
 
-  // Atajo para ir al login desde el avatar
-  const goLogin = useCallback(() => {
-    router.push("/login");
+  const goProfile = useCallback(() => {
+    router.push("/profile");
   }, [router]);
 
-  // Definimos las pestañas inferiores con Home activo
+  const goPreferences = useCallback(() => {
+    router.push("/preferences");
+  }, [router]);
+
   const navItems = useMemo<BottomNavItem[]>(
     () => [
       {
         icon: "home-outline",
-        label: "Home",
+        label: "Inicio",
         onPress: goHome,
         href: "/home",
         active: true,
       },
-      { icon: "document-text-outline", label: "Pedidos" },
       {
         icon: "people-outline",
         label: "Clientes",
         onPress: goClients,
         href: "/client",
       },
-      { icon: "cube-outline", label: "Inventario" },
+      {
+        icon: "person-circle-outline",
+        label: "Perfil",
+        onPress: goProfile,
+        href: "/profile",
+      },
+      {
+        icon: "settings-outline",
+        label: "Preferencias",
+        onPress: goPreferences,
+        href: "/preferences",
+      },
     ],
-    [goClients, goHome],
+    [goClients, goHome, goPreferences, goProfile],
   );
 
   return {
     navItems,
+    // Datos derivados para el header/card en Home
+    displayName: user?.name ?? "Usuario",
+    roleName: user?.roleName ?? "NORMAL",
+    isAdmin: user?.roleName === "ADMIN",
     handleClientsPress: goClients,
-    handleAvatarPress: goLogin,
+    handleAvatarPress: goProfile,
+    handlePreferencesPress: goPreferences,
   };
 }

@@ -4,6 +4,7 @@ import Header from "src/components/Header/header";
 import BottomNav from "src/components/BottomNav/bottom_nav";
 import CustomButton from "src/components/Buttons/button";
 import useClientDetail from "src/hooks/useClientDetail";
+import { useThemePreference } from "src/providers/ThemeProvider";
 
 export default function ClientDetail() {
   // Centralizamos carga, navegación y acciones en el hook
@@ -14,12 +15,14 @@ export default function ClientDetail() {
     navItems,
     handleEdit,
     handleDelete,
+    canDelete,
   } = useClientDetail();
+  const { colors } = useThemePreference();
 
   // Mostramos un estado de carga mientras buscamos el cliente
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Header name="Cliente" />
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>Cargando cliente...</Text>
@@ -29,9 +32,10 @@ export default function ClientDetail() {
     );
   }
 
+  // Si no encontramos el cliente, mostramos mensaje de error
   if (!client) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Header name="Cliente" />
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>Cliente no encontrado</Text>
@@ -46,22 +50,34 @@ export default function ClientDetail() {
 
   // Pintamos la ficha del cliente y sus pedidos
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Header name={client.nombre} />
 
       {/* Dejamos botones para editar o borrar */}
       <View style={styles.actionBar}>
         <CustomButton text="Editar cliente" onPress={handleEdit} />
         <View style={{ height: 10 }} />
-        <CustomButton text="Eliminar cliente" onPress={handleDelete} />
+        {canDelete ? (
+          <CustomButton text="Eliminar cliente" onPress={handleDelete} />
+        ) : (
+          <Text style={styles.notice}>
+            Solo los administradores pueden eliminar.
+          </Text>
+        )}
       </View>
 
+      {/* Contenido desplazable con datos del cliente y sus pedidos */}
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Mostramos los datos básicos del cliente */}
-        <View style={styles.cardPrimary}>
+        <View
+          style={[
+            styles.cardPrimary,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           <Text style={styles.sectionTitle}>Datos del cliente</Text>
           <View style={styles.divider} />
           <View style={styles.row}>
@@ -93,7 +109,12 @@ export default function ClientDetail() {
         </View>
 
         {/* Mostramos los pedidos del cliente */}
-        <View style={styles.cardSecondary}>
+        <View
+          style={[
+            styles.cardSecondary,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Últimos pedidos</Text>
             <Text style={styles.sectionHint}>
@@ -104,6 +125,7 @@ export default function ClientDetail() {
           {pedidosCliente.length === 0 ? (
             <Text style={styles.emptyText}>Sin pedidos registrados.</Text>
           ) : (
+            // Recorremos los pedidos del hook y pintamos cada fila con su estado
             pedidosCliente.map((pedido) => (
               <View key={pedido.id} style={styles.pedidoRow}>
                 <View style={styles.pedidoLeft}>
@@ -129,6 +151,7 @@ export default function ClientDetail() {
 }
 
 function statusPillStyle(estado: string) {
+  // Decidimos colores de la píldora según el estado del pedido
   switch (estado) {
     case "ENTREGADO":
       return { backgroundColor: "#d1fae5", borderColor: "#10b981" };
@@ -146,7 +169,6 @@ function statusPillStyle(estado: string) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7fb",
   },
   actionBar: {
     paddingHorizontal: 16,
@@ -158,11 +180,9 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   cardPrimary: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -170,11 +190,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardSecondary: {
-    backgroundColor: "#fefefe",
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
   },
   sectionTitle: {
     fontSize: 16,
@@ -278,5 +296,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#6b7280",
     marginTop: 6,
+  },
+  notice: {
+    textAlign: "center",
+    color: "#6b7280",
+    fontSize: 13,
   },
 });
