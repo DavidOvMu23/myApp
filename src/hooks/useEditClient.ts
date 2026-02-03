@@ -2,15 +2,19 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { TextInput, type TextInputProps } from "react-native-paper";
 import { useThemePreference } from "src/providers/ThemeProvider";
-import { getClienteById, updateCliente } from "src/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateClient } from "src/services/clientService";
+import { clientQueryKey, clientsQueryKey } from "src/hooks/queries/queryKeys";
+import { useClientQuery } from "src/hooks/queries/useClientQuery";
 
 export default function useEditClient() {
   // Usamos el router para volver o salir
   const router = useRouter();
   // Leemos el id que llega en la URL
   const params = useLocalSearchParams<{ id?: string }>();
-  const clientId = Number(params.id);
+  const clientId = params.id ?? "";
   const { colors, isDark } = useThemePreference();
+  const queryClient = useQueryClient();
 
   // Guardamos el nombre para el título y un flag de no encontrado
   const [clientName, setClientName] = useState<string | null>(null);
@@ -22,51 +26,65 @@ export default function useEditClient() {
   const [telefono, setTelefono] = useState("");
   const [nif, setNif] = useState("");
 
-  // Cargamos los datos del cliente para rellenar el formulario
-  const loadClient = useCallback(async () => {
-    // Traemos el cliente por id; si no existe, marcamos notFound para pintar estado vacío
-    const client = await getClienteById(clientId);
-    if (!client) {
-      setClientName(null);
-      setNotFound(true);
-      return;
-    }
-    setNotFound(false);
-    setClientName(client.nombre);
-    setNombre(client.nombre ?? "");
-    setEmail(client.email ?? "");
-    setTelefono(client.telefono ?? "");
-    setNif(client.nifCif ?? "");
-  }, [clientId]);
+  const isValidId = Boolean(clientId);
+  const {
+    data: client,
+    isLoading,
+    isError,
+    error,
+  } = useClientQuery(clientId, isValidId);
 
   // Volvemos a cargar los datos si cambia el id
   useEffect(() => {
-    if (Number.isNaN(clientId)) {
+    if (!clientId) {
       setClientName(null);
       setNotFound(true);
       return;
     }
-    // Re-ejecutamos la carga cada vez que la ruta cambia de id
-    void loadClient();
-  }, [clientId, loadClient]);
+
+    if (!client && !isLoading && !isError) {
+      setClientName(null);
+      setNotFound(true);
+      return;
+    }
+
+    if (client) {
+      setNotFound(false);
+      setClientName(client.nombre);
+      setNombre(client.nombre ?? "");
+      setEmail(client.email ?? "");
+      setTelefono(client.telefono ?? "");
+      setNif(client.nifCif ?? "");
+    }
+  }, [client, clientId, isError, isLoading]);
 
   // Guardamos cambios y volvemos atrás
-  const handleSave = useCallback(() => {
-    // Usamos el estado local del formulario para construir el payload; trim para limpiar espacios
-    updateCliente(clientId, {
-      nombre: nombre.trim(),
-      email: email.trim() || undefined,
-      telefono: telefono.trim() || undefined,
-      nifCif: nif.trim() || undefined,
-    }).then(() => {
-      router.back();
-    });
-  }, [clientId, email, nif, nombre, router, telefono]);
+  const handleSave = useCallback(
+    function handleSave() {
+      // Usamos el estado local del formulario para construir el payload; trim para limpiar espacios
+      updateClient(clientId, {
+        nombre: nombre.trim(),
+        email: email.trim() || undefined,
+        telefono: telefono.trim() || undefined,
+        nifCif: nif.trim() || undefined,
+      }).then(async function onUpdated() {
+        await queryClient.invalidateQueries({ queryKey: clientsQueryKey });
+        await queryClient.invalidateQueries({
+          queryKey: clientQueryKey(clientId),
+        });
+        router.back();
+      });
+    },
+    [clientId, email, nif, nombre, queryClient, router, telefono],
+  );
 
   // Cancelamos y volvemos a la pantalla anterior
-  const handleCancel = useCallback(() => {
-    router.back();
-  }, [router]);
+  const handleCancel = useCallback(
+    function handleCancel() {
+      router.back();
+    },
+    [router],
+  );
 
   // Compartimos estilos base para los TextInput, (lo ha hecho el chat)
   const fieldBackground = isDark ? "#111b2a" : "#f8fafc";
@@ -93,6 +111,9 @@ export default function useEditClient() {
 
   return {
     notFound,
+    isLoading,
+    isError,
+    error,
     clientName,
     nombre,
     email,

@@ -1,98 +1,108 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { roles, usuarios, type RoleName, type User } from "src/types";
-import { type UserProfile } from "src/stores/userStore";
+import { supabase } from "supabase/supabaseClient";
+import { type RoleName, type UserProfile } from "src/stores/userStore";
 
-// Clave para persistir la sesión en AsyncStorage
-const SESSION_KEY = "@myapp/session/v1";
-
-// Tipo de sesión persistida
-export type AuthSession = {
-  userId: number;
-  token: string;
-};
-
-// Tipo de resultado del login
 export type AuthResult = {
   user: UserProfile;
-  token: string;
 };
 
-// Simulamos latencia de red con una promesa que resuelve tras ms milisegundos
-const wait = (ms = 450) =>
-  new Promise<void>((resolve) => {
-    setTimeout(resolve, ms);
-  });
+export type SignUpResult = {
+  needsEmailConfirmation: boolean;
+};
 
-// URL de avatar por defecto para perfiles de usuario
+type DbProfile = {
+  id: string;
+  full_name: string | null;
+  created_at: string;
+};
+
 const DEFAULT_AVATAR = "https://i.pravatar.cc/150?img=12";
 
-// Transformamos un usuario mock en el perfil que consume el frontend
-const toProfile = (user: User): UserProfile => {
-  // Buscamos el nombre del rol que corresponde al roleId y lo incorporamos al perfil
-  const roleName: RoleName =
-    roles.find((r) => r.id === user.roleId)?.name ?? "NORMAL";
+function mapProfile(profile: DbProfile | null, email: string): UserProfile {
+  const roleName: RoleName = "NORMAL";
   return {
-    id: user.id,
-    roleId: user.roleId,
+    id: profile?.id ?? "",
     roleName,
-    name: user.name,
-    email: user.email,
+    name: profile?.full_name || email || "Usuario",
+    email,
     avatarUrl: DEFAULT_AVATAR,
   };
-};
+}
 
-// Intentamos autenticar con email y password; lanzamos error si no es válido
-export const loginWithEmail = async (
+export async function loginWithEmail(
   email: string,
   password: string,
-): Promise<AuthResult> => {
-  // Simulamos latencia de red para que el loader tenga sentido
-  await wait();
-  // Normalizamos el email de entrada para compararlo sin mayúsculas ni espacios
-  const normalized = email.trim().toLowerCase();
-  const user = usuarios.find((u) => u.email.toLowerCase() === normalized);
+): Promise<AuthResult> {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-  if (!user || !password.trim()) {
-    throw new Error("Credenciales inválidas");
+  if (error) {
+    throw error;
   }
 
-  // Generamos un token falso; no hay backend real
-  const token = `mock-token-${user.id}-${Date.now()}`;
+  const user = data.user;
+  if (!user) {
+    throw new Error("No se pudo obtener el usuario autenticado.");
+  }
+
+  const profile = await getUserProfileById(user.id, user.email ?? email);
+  if (!profile) {
+    throw new Error("No se pudo obtener el perfil del usuario.");
+  }
+
+  return { user: profile };
+}
+
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  fullName: string,
+): Promise<SignUpResult> {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+      },
+    },
+  });
+
+  if (error) {
+    throw error;
+  }
+
   return {
-    user: toProfile(user),
-    token,
+    needsEmailConfirmation: !data.session,
   };
-};
+}
 
-// Persistimos la sesión serializada en storage
-export const persistSession = async (session: AuthSession) => {
-  // Guardamos userId y token mock (string) para rehidratar en arranques futuros
-  await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(session));
-};
+export async function clearSession() {
+  await supabase.auth.signOut();
+}
 
-// Borramos la sesión almacenada
-export const clearSession = async () => {
-  await AsyncStorage.removeItem(SESSION_KEY);
-};
-
-// Intentamos restaurar sesión; si hay JSON roto, lo limpiamos
-export const restoreSession = async (): Promise<AuthSession | null> => {
-  const raw = await AsyncStorage.getItem(SESSION_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as AuthSession;
-  } catch (error) {
-    await AsyncStorage.removeItem(SESSION_KEY);
+export async function restoreSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
     return null;
   }
-};
+  return data.session;
+}
 
-export const getUserProfileById = async (
-  userId: number,
-): Promise<UserProfile | null> => {
-  // Mock de red para que la UI muestre el estado de carga
-  await wait();
-  const user = usuarios.find((u) => u.id === userId);
-  if (!user) return null;
-  return toProfile(user);
-};
+export async function getUserProfileById(
+  userId: string,
+  fallbackEmail = "",
+): Promise<UserProfile | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, created_at")
+    .eq("id", userId)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    return null;
+  }
+
+  return mapProfile(data ?? null, fallbackEmail);
+}

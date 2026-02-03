@@ -9,8 +9,16 @@ import { useThemePreference } from "src/providers/ThemeProvider";
 // Mostramos la lista de clientes con accesos a detalle y creación
 export default function Client() {
   // Traemos la carga, navegación y barra inferior desde el hook
-  const { items, navItems, handleOpenClient, handleCreate, canCreate } =
-    useClientList();
+  const {
+    items,
+    isLoading,
+    isError,
+    error,
+    navItems,
+    handleOpenClient,
+    handleCreate,
+    canCreate,
+  } = useClientList();
   const { colors } = useThemePreference();
 
   return (
@@ -19,7 +27,15 @@ export default function Client() {
 
       {/* Pintamos un botón por cada cliente que llega desde `items` */}
       <ScrollView contentContainerStyle={styles.list}>
-        {items.length === 0 ? (
+        {isLoading ? (
+          <Text style={styles.emptyText}>Cargando clientes...</Text>
+        ) : isError ? (
+          <Text style={styles.emptyText}>
+            {error instanceof Error
+              ? error.message
+              : "No se pudieron cargar los clientes."}
+          </Text>
+        ) : items.length === 0 ? (
           <Text style={styles.emptyText}>No hay clientes todavía.</Text>
         ) : (
           // Cada botón llama a handleOpenClient con el id del elemento iterado

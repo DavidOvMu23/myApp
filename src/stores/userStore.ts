@@ -1,11 +1,11 @@
 import { create } from "zustand";
-import { type RoleName } from "src/types";
+
+export type RoleName = "ADMIN" | "NORMAL";
 
 // Perfil de usuario almacenado en la app
 export type UserProfile = {
-  id: number;
-  roleId: number;
-  roleName: RoleName;
+  id: string;
+  roleName?: RoleName;
   name: string;
   email: string;
   avatarUrl?: string;

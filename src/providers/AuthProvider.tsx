@@ -10,7 +10,6 @@ import {
   clearSession,
   getUserProfileById,
   loginWithEmail,
-  persistSession,
   restoreSession,
 } from "src/services/auth";
 import { useUserStore, type UserProfile } from "src/stores/userStore";
@@ -39,13 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 1) Marcamos que estamos verificando, 2) leemos token mock, 3) traemos perfil, 4) ajustamos estado
     setStatus("checking");
     const session = await restoreSession();
-    if (!session) {
+    if (!session?.user) {
       clearUser();
       setStatus("unauthenticated");
       return;
     }
 
-    const profile = await getUserProfileById(session.userId);
+    const profile = await getUserProfileById(
+      session.user.id,
+      session.user.email ?? "",
+    );
     if (!profile) {
       await clearSession();
       clearUser();
@@ -69,7 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsBusy(true);
       try {
         const result = await loginWithEmail(email, password);
-        await persistSession({ userId: result.user.id, token: result.token });
         setUser(result.user);
         setStatus("authenticated");
       } catch (error) {

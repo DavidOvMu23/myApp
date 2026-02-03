@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
+import { Alert } from "react-native";
 import { TextInput, type TextInputProps } from "react-native-paper";
 import { type BottomNavItem } from "src/components/BottomNav/bottom_nav";
 import { useThemePreference } from "src/providers/ThemeProvider";
 import { useUserStore } from "src/stores/userStore";
-import { createCliente } from "src/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { createClient } from "src/services/clientService";
+import { clientsQueryKey } from "src/hooks/queries/queryKeys";
 
 export default function useNewClient() {
   // Usamos el router para volver o ir al detalle
@@ -12,6 +15,7 @@ export default function useNewClient() {
   const user = useUserStore((state) => state.user);
   const isAdmin = user?.roleName === "ADMIN";
   const { colors, isDark } = useThemePreference();
+  const queryClient = useQueryClient();
   // Guardamos los estados del formulario que vienen de los inputs
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
@@ -22,32 +26,54 @@ export default function useNewClient() {
   const isSaveDisabled = useMemo(() => !nombre.trim(), [nombre]);
 
   // Creamos el cliente con lo que escribimos en el formulario
-  const handleSave = useCallback(async () => {
-    // Si no es admin, ignoramos la acción aunque el botón estuviera oculto
-    if (!isAdmin) return;
-    const nuevo = await createCliente({
-      nombre: nombre.trim(),
-      email: email.trim() || undefined,
-      telefono: telefono.trim() || undefined,
-      nifCif: nif.trim() || undefined,
-      activo: true,
-    });
-    router.replace(`/client/${nuevo.id}`);
-  }, [email, isAdmin, nif, nombre, router, telefono]);
+  const handleSave = useCallback(
+    async function handleSave() {
+      // Si no es admin, ignoramos la acción aunque el botón estuviera oculto
+      if (!isAdmin) return;
+      try {
+        const nuevo = await createClient({
+          nombre: nombre.trim(),
+          email: email.trim() || undefined,
+          telefono: telefono.trim() || undefined,
+          nifCif: nif.trim() || undefined,
+          activo: true,
+        });
+        await queryClient.invalidateQueries({ queryKey: clientsQueryKey });
+        router.replace(`/client/${nuevo.id}`);
+      } catch (error) {
+        Alert.alert(
+          "No se pudo crear",
+          error instanceof Error
+            ? error.message
+            : "No se pudo crear el cliente.",
+        );
+      }
+    },
+    [email, isAdmin, nif, nombre, queryClient, router, telefono],
+  );
 
   // Cancelamos y volvemos atrás
-  const handleCancel = useCallback(() => {
-    router.back();
-  }, [router]);
+  const handleCancel = useCallback(
+    function handleCancel() {
+      router.back();
+    },
+    [router],
+  );
 
   // Definimos la barra inferior con Clientes activo
-  const goHome = useCallback(() => {
-    router.push("/home");
-  }, [router]);
+  const goHome = useCallback(
+    function goHome() {
+      router.push("/home");
+    },
+    [router],
+  );
 
-  const goClients = useCallback(() => {
-    router.push("/client");
-  }, [router]);
+  const goClients = useCallback(
+    function goClients() {
+      router.push("/client");
+    },
+    [router],
+  );
 
   const navItems = useMemo<BottomNavItem[]>(
     () => [

@@ -10,6 +10,9 @@ export default function EditClient() {
   // Obtenemos carga, estado del formulario y navegación desde el hook
   const {
     notFound,
+    isLoading,
+    isError,
+    error,
     clientName,
     nombre,
     email,
@@ -25,6 +28,35 @@ export default function EditClient() {
     iconColor,
   } = useEditClient();
   const { colors } = useThemePreference();
+
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Header name="Editar cliente" />
+        <View style={styles.notFound}>
+          <Text style={styles.notFoundTitle}>Cargando cliente...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Header name="Editar cliente" />
+        <View style={styles.notFound}>
+          <Text style={styles.notFoundTitle}>No se pudo cargar</Text>
+          <Text style={styles.notFoundText}>
+            {error instanceof Error
+              ? error.message
+              : "Revisa la conexión e inténtalo de nuevo."}
+          </Text>
+          <View style={{ height: 12 }} />
+          <CustomButton text="Volver" onPress={handleCancel} />
+        </View>
+      </View>
+    );
+  }
 
   // Si no encontramos el cliente, mostramos mensaje de error
   if (notFound) {

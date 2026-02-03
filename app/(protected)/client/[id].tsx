@@ -11,6 +11,8 @@ export default function ClientDetail() {
   const {
     client,
     loading,
+    isError,
+    error,
     pedidosCliente,
     navItems,
     handleEdit,
@@ -26,6 +28,23 @@ export default function ClientDetail() {
         <Header name="Cliente" />
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>Cargando cliente...</Text>
+        </View>
+        <BottomNav items={navItems} showFab={false} />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Header name="Cliente" />
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No se pudo cargar el cliente</Text>
+          <Text style={styles.emptyText}>
+            {error instanceof Error
+              ? error.message
+              : "Revisa la conexión y vuelve a intentarlo."}
+          </Text>
         </View>
         <BottomNav items={navItems} showFab={false} />
       </View>

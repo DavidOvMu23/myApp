@@ -8,8 +8,10 @@ import Button from "../src/components/Buttons/button";
 import GoogleButton from "../src/components/Buttons/google_button";
 import useLogin from "../src/hooks/useLogin";
 import { useThemePreference } from "src/providers/ThemeProvider";
+import { useRouter } from "expo-router";
 
 export default function Login() {
+  const router = useRouter();
   const {
     email,
     password,
@@ -106,7 +108,10 @@ export default function Login() {
           <Text style={[styles.signupText, { color: colors.muted }]}>
             ¿No tienes una cuenta?
           </Text>
-          <TextButton text="Regístrate ahora" />
+          <TextButton
+            text="Regístrate ahora"
+            onPress={() => router.push("/signup")}
+          />
         </View>
       </View>
     </View>
