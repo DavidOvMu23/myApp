@@ -4,7 +4,7 @@ import { Feather } from "@expo/vector-icons";
 import { useThemePreference } from "src/providers/ThemeProvider";
 
 // Pintamos un ícono de candado dentro de un círculo
-const LockIcon = () => {
+function LockIcon() {
   const { colors, isDark } = useThemePreference();
   // Fondo suave usando surface y un velo claro para que no grite en oscuro
   const background = isDark ? "rgba(255,255,255,0.06)" : "#f3f0f6";
@@ -20,7 +20,7 @@ const LockIcon = () => {
       <Feather name="lock" size={24} color={colors.primary} />
     </View>
   );
-};
+}
 
 // Definimos los estilos del icono
 const styles = StyleSheet.create({

@@ -13,7 +13,7 @@ interface TextButtonProps {
   onPress?: (event: GestureResponderEvent) => void;
 }
 
-const TextButton = ({ text, onPress }: TextButtonProps) => {
+function TextButton({ text, onPress }: TextButtonProps) {
   const { colors } = useThemePreference();
 
   return (
@@ -22,7 +22,7 @@ const TextButton = ({ text, onPress }: TextButtonProps) => {
       <Text style={[styles.text, { color: colors.primary }]}>{text}</Text>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   text: {

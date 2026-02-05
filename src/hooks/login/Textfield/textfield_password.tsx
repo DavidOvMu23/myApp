@@ -1,7 +1,6 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { TextInput } from "react-native-paper";
-import { useThemePreference } from "src/providers/ThemeProvider";
+import { StyleSheet } from "react-native";
+import TextField from "src/components/Inputs/TextField";
 
 // Creamos un campo de texto para la contraseña
 interface TextfieldPasswordProps {
@@ -9,45 +8,23 @@ interface TextfieldPasswordProps {
   onChangeText: (text: string) => void;
 }
 
-// Definimos el componente que pinta el input de contraseña
-export const TextfieldPassword = ({
+// Wrapper específico para password usando el TextField genérico
+export default function TextfieldPassword({
   value,
   onChangeText,
-}: TextfieldPasswordProps) => {
-  const { colors, isDark } = useThemePreference();
-  // Ajustamos fondo/placeholder para que se lea bien en ambos temas
-  const fieldBackground = isDark ? "#111b2a" : "#f8fafc";
-  const placeholderColor = isDark ? "rgba(179,192,207,0.72)" : "#9ca3af";
-
+}: TextfieldPasswordProps) {
   return (
-    // Dejamos el contenedor del input
-    <View style={styles.container}>
-      {/* Usamos value y onChangeText que llegan desde la pantalla */}
-      <TextInput
-        mode="outlined"
-        placeholder="Contraseña"
-        secureTextEntry
-        autoCapitalize="none"
-        activeOutlineColor={colors.primary}
-        outlineColor={colors.border}
-        left={<TextInput.Icon icon="lock-outline" color={placeholderColor} />}
-        style={[styles.input, { backgroundColor: fieldBackground }]}
-        outlineStyle={styles.outline}
-        value={value}
-        onChangeText={onChangeText}
-        theme={{
-          colors: {
-            text: colors.text,
-            placeholder: placeholderColor,
-            onSurfaceVariant: placeholderColor,
-          },
-        }}
-      />
-    </View>
+    <TextField
+      value={value}
+      onChangeText={onChangeText}
+      placeholder="Contraseña"
+      secure
+      leftIcon="lock-outline"
+    />
   );
-};
+}
 
-// Definimos los estilos del input
+// Estilos (compatibilidad, no usados por el wrapper genérico)
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
@@ -59,5 +36,3 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
 });
-
-export default TextfieldPassword;

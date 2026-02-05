@@ -10,7 +10,7 @@ interface ButtonProps {
 }
 
 /* Definimos el componente y recibimos los datos que nos pasan por props */
-const Button = ({ text, disabled = false, onPress }: ButtonProps) => {
+function Button({ text, disabled = false, onPress }: ButtonProps) {
   const { colors, isDark } = useThemePreference();
   // Elegimos colores en función del tema y si está deshabilitado, evitando perder contraste
   const bg = disabled ? (isDark ? "#1f2937" : "#e5e7eb") : colors.primary;
@@ -27,7 +27,7 @@ const Button = ({ text, disabled = false, onPress }: ButtonProps) => {
       <Text style={[styles.text, { color: fg }]}>{text}</Text>
     </TouchableOpacity>
   );
-};
+}
 
 /* Definimos los estilos del botón */
 const styles = StyleSheet.create({

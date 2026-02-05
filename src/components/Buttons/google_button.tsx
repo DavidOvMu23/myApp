@@ -8,7 +8,7 @@ interface GoogleButtonProps {
   text?: string;
 }
 
-const GoogleButton = ({ text = "Continúa con Google" }: GoogleButtonProps) => {
+function GoogleButton({ text = "Continúa con Google" }: GoogleButtonProps) {
   const { colors } = useThemePreference();
 
   return (
@@ -24,7 +24,7 @@ const GoogleButton = ({ text = "Continúa con Google" }: GoogleButtonProps) => {
       <Text style={[styles.text, { color: colors.text }]}>{text}</Text>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   button: {
