@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image, Alert, ScrollView } from "react-native";
 import { TextInput } from "react-native-paper";
 import Header from "src/components/Header/header";
 import CustomButton from "src/components/Buttons/button";
@@ -9,13 +9,18 @@ import BottomNav, {
 import { useAuth } from "src/providers/AuthProvider";
 import { useThemePreference } from "src/providers/ThemeProvider";
 import { useUserStore } from "src/stores/userStore";
+import { pickImageFromLibrary } from "src/features/storage/pickImage";
+import { uploadUserAvatar } from "src/services/profile";
 
 // Pantalla de perfil de usuario con edición de nombre y cierre de sesión
 export default function Profile() {
   const { user, logout, isBusy } = useAuth();
   const { colors, isDark } = useThemePreference();
   const updateUser = useUserStore((state) => state.updateUser);
+  const setUser = useUserStore((state) => state.setUser);
   const [name, setName] = useState(user?.name ?? "");
+  const [selectedUri, setSelectedUri] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   // Tabs inferiores con Perfil activo
   const navItems = useMemo<BottomNavItem[]>(
     () => [
@@ -52,74 +57,148 @@ export default function Profile() {
     updateUser({ name: name.trim() || user.name });
   };
 
+  const handlePickAvatar = async () => {
+    try {
+      const asset = await pickImageFromLibrary();
+      if (!asset) return;
+      setSelectedUri(asset.uri);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo acceder a la galería");
+    }
+  };
+
+  const handleUploadAvatar = async () => {
+    if (!selectedUri) return;
+
+    setIsUploading(true);
+    try {
+      const updated = await uploadUserAvatar({
+        userId: user.id,
+        fileUri: selectedUri,
+        fallbackEmail: user.email ?? "",
+        fallbackName: user.name ?? "",
+      });
+      updateUser({ avatarUrl: updated.avatarUrl });
+      setUser(updated);
+      setSelectedUri(null);
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error?.message ?? "No se pudo subir la imagen de perfil",
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Renderizamos la pantalla de perfil con edición de nombre y cierre de sesión
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Encabezado con avatar actual del usuario */}
       <Header name="Tu perfil" avatarUri={user.avatarUrl} />
-      <View
-        style={[
-          styles.card,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-        ]}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        {/* Bloque principal para editar nombre y ver email/rol */}
-        <Text style={[styles.title, { color: colors.text }]}>
-          Información básica
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Actualiza tu nombre visible.
-        </Text>
-        {/* Campo de texto para editar el nombre */}
-        <Text style={[styles.label, { color: colors.muted }]}>Nombre</Text>
-        <TextInput
-          mode="outlined"
-          value={name}
-          onChangeText={setName}
-          // El valor vive en estado local y luego se persiste al store con handleSave
-          outlineStyle={{ borderRadius: 10 }}
-          style={{ backgroundColor: colors.surface }}
-        />
-        <Text style={[styles.label, { color: colors.muted }]}>Email</Text>
-        <View style={styles.infoRow}>
-          <Text style={[styles.value, { color: colors.text }]}>
-            {user.email}
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.text }]}>
+            Foto de perfil
           </Text>
-        </View>
-        <Text style={[styles.label, { color: colors.muted }]}>Rol</Text>
-        <View style={styles.badges}>
-          <View
-            style={[
-              styles.badge,
-              {
-                borderColor: colors.primary,
-                backgroundColor: isDark
-                  ? "rgba(96,165,250,0.22)"
-                  : colors.primary,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.badgeText,
-                { color: isDark ? colors.text : colors.contrastText },
-              ]}
-            >
-              {user.roleName}
-            </Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            Elige una imagen y súbela a tu cuenta.
+          </Text>
+          <View style={styles.avatarRow}>
+            <Image
+              source={{ uri: selectedUri ?? user.avatarUrl }}
+              style={styles.avatarImage}
+            />
+            <View style={styles.avatarActions}>
+              <CustomButton text="Elegir imagen" onPress={handlePickAvatar} />
+              <CustomButton
+                text={isUploading ? "Subiendo..." : "Subir avatar"}
+                onPress={handleUploadAvatar}
+                disabled={!selectedUri || isUploading}
+              />
+            </View>
           </View>
         </View>
-        {/* Acciones para persistir cambios o cerrar sesión */}
-        <View style={styles.actions}>
-          <CustomButton text="Guardar" onPress={handleSave} />
-          <View style={{ height: 10 }} />
-          <CustomButton
-            text={isBusy ? "Cerrando..." : "Cerrar sesión"}
-            // logout viene del AuthProvider y limpia storage + store
-            onPress={logout}
+
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.text }]}>
+            Información básica
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            Actualiza tu nombre visible.
+          </Text>
+          <Text style={[styles.label, { color: colors.muted }]}>Nombre</Text>
+          <TextInput
+            mode="outlined"
+            value={name}
+            onChangeText={setName}
+            outlineStyle={{ borderRadius: 10 }}
+            style={{ backgroundColor: colors.surface }}
           />
+          <Text style={[styles.label, { color: colors.muted }]}>Email</Text>
+          <View style={styles.infoRow}>
+            <Text style={[styles.value, { color: colors.text }]}>
+              {user.email}
+            </Text>
+          </View>
+          <Text style={[styles.label, { color: colors.muted }]}>Rol</Text>
+          <View style={styles.badges}>
+            <View
+              style={[
+                styles.badge,
+                {
+                  borderColor: colors.primary,
+                  backgroundColor: isDark
+                    ? "rgba(96,165,250,0.22)"
+                    : colors.primary,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.badgeText,
+                  { color: isDark ? colors.text : colors.contrastText },
+                ]}
+              >
+                {user.roleName}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.actions}>
+            <CustomButton text="Guardar" onPress={handleSave} />
+          </View>
         </View>
-      </View>
+
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Text style={[styles.title, { color: colors.text }]}>Sesión</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            Gestiona tu acceso a la app.
+          </Text>
+          <View style={styles.actions}>
+            <CustomButton
+              text={isBusy ? "Cerrando..." : "Cerrar sesión"}
+              onPress={logout}
+            />
+          </View>
+        </View>
+      </ScrollView>
 
       <BottomNav items={navItems} showFab={false} />
     </View>
@@ -130,11 +209,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 120,
+    gap: 12,
+  },
   content: {
     padding: 16,
   },
   card: {
-    margin: 16,
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
@@ -170,6 +253,22 @@ const styles = StyleSheet.create({
   badgeText: {
     fontWeight: "700",
     color: "#111827",
+  },
+  avatarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginTop: 8,
+  },
+  avatarImage: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: "#e5e7eb",
+  },
+  avatarActions: {
+    flex: 1,
+    gap: 8,
   },
   infoRow: {
     paddingVertical: 6,

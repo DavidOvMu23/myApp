@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Text, ActivityIndicator, Image } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useRouter } from "expo-router";
@@ -34,6 +34,12 @@ export default function Signup() {
   function handleGoLogin() {
     router.replace("/login");
   }
+
+  useEffect(() => {
+    if (success) {
+      router.replace("/login");
+    }
+  }, [router, success]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

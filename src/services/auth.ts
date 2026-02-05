@@ -13,9 +13,17 @@ type DbProfile = {
   id: string;
   full_name: string | null;
   created_at: string;
+  avatar_url?: string | null;
 };
 
-const DEFAULT_AVATAR = "https://i.pravatar.cc/150?img=12";
+const DEFAULT_AVATAR_BASE =
+  "https://ui-avatars.com/api/?background=E5E7EB&color=111827&size=256&name=";
+
+function buildDefaultAvatar(name: string) {
+  const trimmed = name.trim();
+  const initial = trimmed ? trimmed[0] : "U";
+  return `${DEFAULT_AVATAR_BASE}${encodeURIComponent(initial)}`;
+}
 
 function mapProfile(
   profile: DbProfile | null,
@@ -24,12 +32,20 @@ function mapProfile(
 ): UserProfile {
   const roleName: RoleName = "NORMAL";
   const safeName = profile?.full_name || fallbackName || "Usuario";
+  const avatarPath = profile?.avatar_url ?? null;
+  const isFullUrl =
+    typeof avatarPath === "string" && avatarPath.startsWith("http");
+  const avatarUrl = avatarPath
+    ? isFullUrl
+      ? avatarPath
+      : supabase.storage.from("avatars").getPublicUrl(avatarPath).data.publicUrl
+    : buildDefaultAvatar(safeName);
   return {
     id: profile?.id ?? "",
     roleName,
     name: safeName,
     email,
-    avatarUrl: DEFAULT_AVATAR,
+    avatarUrl,
   };
 }
 
@@ -127,11 +143,33 @@ export async function getUserProfileById(
 ): Promise<UserProfile | null> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, full_name, created_at")
+    .select("id, full_name, created_at, avatar_url")
     .eq("id", userId)
     .single();
 
-  if (error && error.code !== "PGRST116") {
+  if (error) {
+    if (error.code === "PGRST116") {
+      return mapProfile(null, fallbackEmail, fallbackName);
+    }
+
+    if (error.code === "42703" || error.message?.includes("avatar_url")) {
+      const fallback = await supabase
+        .from("profiles")
+        .select("id, full_name, created_at")
+        .eq("id", userId)
+        .single();
+
+      if (fallback.error && fallback.error.code !== "PGRST116") {
+        return null;
+      }
+
+      return mapProfile(
+        (fallback.data ?? null) as DbProfile | null,
+        fallbackEmail,
+        fallbackName,
+      );
+    }
+
     return null;
   }
 

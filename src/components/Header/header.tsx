@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemePreference } from "src/providers/ThemeProvider";
+import { useUserStore } from "src/stores/userStore";
 
 // Componente de encabezado que muestra un saludo, la fecha actual y un avatar de usuario
 interface Props {
@@ -15,12 +16,17 @@ interface Props {
 export default function Header({
   name = "Usuario",
   onAvatarPress,
-  avatarUri = "https://i.pravatar.cc/150?img=12", // la imagen me la dio el chatGPT
+  avatarUri,
 }: Props) {
   // Sacamos la fecha de hoy
   const today = new Date();
   // Traemos la paleta actual para que el header respete claro/oscuro
   const { colors } = useThemePreference();
+  const user = useUserStore((state) => state.user);
+  const resolvedAvatarUri =
+    avatarUri ??
+    user?.avatarUrl ??
+    "https://ui-avatars.com/api/?background=E5E7EB&color=111827&size=256&name=U";
 
   // Formateamos la fecha en español (esto me lo dio el chatGPT)
   const formatted = today.toLocaleDateString("es-ES", {
@@ -46,7 +52,7 @@ export default function Header({
           onPress={onAvatarPress}
           activeOpacity={0.8}
         >
-          <Image source={{ uri: avatarUri }} style={styles.avatar} />
+          <Image source={{ uri: resolvedAvatarUri }} style={styles.avatar} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
