@@ -128,8 +128,10 @@ export async function searchReleases(
     }
   }
 
-  // Creamos una URL con los parametros de busqueda para hacer la petición al API de Discogs.
-  // Es como
+  // Construimos la URL de búsqueda.
+  // La url al final es como si estuviéramos escribiendo en el navegador:
+  // https://api.discogs.com/database/search?q=beatles&type=release&token=MI_TOKEN
+  // pero con el texto que el usuario escribió en lugar de "beatles" y nuestro token real para poder usar la API.
   const params = new URLSearchParams({
     q,
     type: "release",
@@ -138,21 +140,25 @@ export async function searchReleases(
   });
   const url = `${API_BASE}/database/search?${params.toString()}`;
 
+  // Autenticación: obtenemos los headers con el token para la API.
   const headers = await getAuthHeaders();
 
-  // Separació de fils / Lògica asíncrona (rúbrica 0.50 + 1.00):
-  // - La petición se hace con `fetch` y `async/await`.
-  // - Se acepta `options.signal` (AbortSignal) para cancelar desde la UI y evitar bloqueos.
+  // Hacemos la petición a la API de Discogs con fetch, pasando los headers y el signal para poder cancelar si es necesario.
+  // lo hacemos con await para esperar la respuesta y manejarla de forma síncrona en el código.
   const res = await fetch(url, { headers, signal: options?.signal });
 
-  // Maneig d'HTTP i Xarxa (rúbrica 1.00): control explícito de errores relevantes
+  // Manejamos los errores que puede llegar a darnos a la hora de hacer la peticion a la api
+  // Si la respuesta no es ok, lanzamos un error con el código de estado para que la UI pueda mostrar un mensaje adecuado.
   if (!res.ok) {
     if (res.status === 429) throw new Error("Discogs: rate limit (429)");
     throw new Error(`Discogs: HTTP ${res.status}`);
   }
 
+  // Parseamos la respuesta JSON y mapeamos los resultados a nuestro tipo `DiscogsReleaseSummary`.
   const json = await res.json();
-  // Mapeig d'entitats (rúbrica 1.25): convertimos la respuesta JSON a DTOs tipados
+
+  // Mapeamos los resultados de la consulta a la api a el tipo que hemos definido en src/types/discogs.ts,
+  // para así trabajar de una forma mas fácil con los datos y evitar errores.
   const results = Array.isArray(json.results)
     ? json.results.map((r: any) => ({
         id: Number(r.id),
@@ -171,19 +177,13 @@ export async function searchReleases(
       }))
     : [];
 
-  // Caché / Memòria (rúbrica 0.50) y Control del cicle de vida (rúbrica 0.50):
-  // - Guardamos en `searchCache` con TTL y también persistimos en `AsyncStorage`.
-  // - `forceRefresh` permite invalidar la caché cuando la UI lo solicite.
-  // - Persistir la búsqueda reduce peticiones repetidas y mejora experiencia offline parcial.
-
-  // Guardamos en caché en memoria y persistente (no bloquear si falla)
+  // Guardamos en caché de la busqueda en memoria y persistente
   try {
     searchCache.set(cacheKey, { ts: Date.now(), data: results });
     persistSearchCache(cacheKey, results);
-  } catch {
-    // ignorar fallos de caché
-  }
+  } catch {}
 
+  // Devolvemos los resultados mapeados a la UI para que los muestre al usuario.
   return results;
 }
 
@@ -192,10 +192,17 @@ export async function searchReleases(
  * Usa caché en memoria.
  */
 export async function getReleaseDetail(
+  //la función recibe el id del release que queremos obtener el detalle y
+  // un objeto de opciones para controlar la peticion
   id: number,
   options?: { signal?: AbortSignal; forceRefresh?: boolean },
+
+  // Usaremos promise para manejar la asincronía de los datos persistidos y así
+  // devolver los datos parseados si son válidos, o null si no hay datos o han expirado.
 ): Promise<DiscogsReleaseDetail> {
   const cached = detailCache.get(id);
+
+  // Devuelve caché si válida
   if (
     !options?.forceRefresh &&
     cached &&
@@ -204,9 +211,15 @@ export async function getReleaseDetail(
     return cached.data;
   }
 
+  // Construimos la URL para obtener el detalle del release por su id.
+  // La url al final es como si estuviéramos escribiendo en el navegador:
+  // https://api.discogs.com/releases/12345?token=MI_TOKEN
+  // pero con el id del release que queremos obtener el detalle y nuestro token real para poder usar la API.
   const headers = await getAuthHeaders();
   const url = `${API_BASE}/releases/${id}`;
 
+  // Hacemos la petición a la API de Discogs con fetch, pasando los headers y el signal para poder cancelar si es necesario.
+  // lo hacemos con await para esperar la respuesta y manejarla de forma síncrona en el código.
   const res = await fetch(url, { headers, signal: options?.signal });
   if (!res.ok) {
     if (res.status === 404) throw new Error("Release no encontrado");
@@ -214,8 +227,11 @@ export async function getReleaseDetail(
     throw new Error(`Discogs: HTTP ${res.status}`);
   }
 
+  // Parseamos la respuesta JSON y mapeamos el resultado a nuestro tipo `DiscogsReleaseDetail`.
   const json = await res.json();
 
+  // Mapeamos los resultados de la consulta a la api a el tipo que hemos definido en src/types/discogs.ts,
+  // para así trabajar de una forma mas fácil con los datos y evitar errores.
   const detail: DiscogsReleaseDetail = {
     id: Number(json.id),
     title: json.title,
@@ -229,10 +245,7 @@ export async function getReleaseDetail(
     resource_url: json.resource_url,
   };
 
-  // Mapeig d'entitats (rúbrica 1.25): convertimos respuesta a `DiscogsReleaseDetail`.
-  // Gestió de fitxers (rúbrica 1.00): `images` contiene URLs; la UI debe gestionar la carga
-  // y la liberación de memoria (evitar descargar automáticamente aquí para no bloquear).
-
+  // Guardamos en caché el detalle en memoria
   detailCache.set(id, { ts: Date.now(), data: detail });
   return detail;
 }
